@@ -31,8 +31,7 @@ This application provides visualizations and tools related to [Metagenomic Commu
 
 3. Download the necessary data and media:
     ```bash
-    wget <data_download_url>
-    wget <medias_download_url>
+    wget <download_url>
     ```
 
 4. Create and activate the conda environment:
