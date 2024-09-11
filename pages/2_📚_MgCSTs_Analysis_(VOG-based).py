@@ -9,9 +9,10 @@ st.sidebar.subheader("Contact")
 st.sidebar.write("jholm@som.umaryland.edu")
 
 ######################################## ----- DATA IMPORTATION ----- ########################################
+
 mgcsts_samples = pd.read_csv("data/samples_w_mgCSTs.csv")
 mgcsts = pd.read_csv("data/mgCSTs.csv")
-projects = pd.read_csv("data/VIRGO2_projects.csv")
+projects = pd.read_csv("data/VIRGO2_projects_anonymous.csv")
 
 ######################################## ----- DATA PROCESSING ----- #############################################
 
@@ -90,12 +91,12 @@ with col2 :
     st.plotly_chart(fig, use_container_width=True)
 
 with col3 :
-
-    File_S6 = pd.read_excel('data/File_S6_clean.xlsx')
-    old_mgCST = File_S6[['mapID', 'mgCST']]
-    old_mgCST = old_mgCST.rename(columns={'mapID':'sampleID'})
-    new_mgCST = mgcsts_samples
-    new_vs_old = pd.merge(new_mgCST, old_mgCST, on='sampleID', how='inner')
+    new_vs_old = pd.read_csv("data/new_vs_old_mgcsts.csv")
+    # old_mgCST = File_S6[['mapID', 'mgCST']]
+    # old_mgCST = old_mgCST.rename(columns={'mapID':'sampleID'})
+    # new_mgCST = mgcsts_samples
+    # new_vs_old = pd.merge(new_mgCST, old_mgCST, on='sampleID', how='inner')
+    # st.write(new_vs_old.shape)
     bubble_data = new_vs_old.groupby(['mgCST_x', 'mgCST_y']).size().reset_index(name='count')
     bubble_data = bubble_data.rename(columns={"mgCST_x":"mgCST", "mgCST_y":"old_mgCST"})
 
