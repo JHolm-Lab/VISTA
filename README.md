@@ -10,7 +10,7 @@ This application provides visualizations and tools related to [Metagenomic Commu
     ```
 2. Navigate to the repo directory:
     ```bash
-    cd /path/to/mgCST_classifier_v2
+    cd /path/to/mgCST-classifier-v2
     ```
 3. Run the classifier (choose n)
    ```bash
@@ -26,7 +26,7 @@ This application provides visualizations and tools related to [Metagenomic Commu
 
 2. Navigate to the application directory:
     ```bash
-    cd /path/to/mgCST_classifier_v2
+    cd /path/to/mgCST-classifier-v2
     ```
 
 3. Download the necessary data and media:
@@ -53,7 +53,7 @@ This application provides visualizations and tools related to [Metagenomic Commu
 
    a. Access the Streamlit config file (```.streamlit/config.toml```)
     ```bash
-    cd path/to/mgCST_classifier_v2/.streamlit
+    cd path/to/mgCST-classifier-v2/.streamlit
     ```
    b. Modify the ```config.toml``` file
    ```toml
