@@ -6,7 +6,7 @@ This application provides visualizations and tools related to [Metagenomic Commu
 
 1. Clone the repository:
     ```bash
-    git clone <url> 
+    git clone https://github.com/JHolm-Lab/mgCST-classifier-v2.git
     ```
 2. Navigate to the repo directory:
     ```bash
@@ -21,7 +21,7 @@ This application provides visualizations and tools related to [Metagenomic Commu
 
 1. Clone the repository:
     ```bash
-    git clone <url> 
+    git clone https://github.com/JHolm-Lab/mgCST-classifier-v2.git
     ```
 
 2. Navigate to the application directory:
