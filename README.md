@@ -16,18 +16,14 @@ This application provides visualizations and tools related to [Metagenomic Commu
     ```bash
     wget <download_url>
     ```
-4. Run the classifier (choose n)
-   ```bash
-   Rscript mgCST_classifier_v2.R ./VIRGO2 ./mgCST-classifier-master 4
-   ```
-5. Create and activate the conda environment:
+4. Create and activate the conda environment:
     ```bash
     conda env create -f env.yaml
     ```
     ```bash
     conda activate mgcst_app
     ```
-6. Run the app:
+5. Run the app:
     ```bash
     streamlit run 0_🏠_Home.py
     ```
@@ -35,11 +31,16 @@ This application provides visualizations and tools related to [Metagenomic Commu
 ## Notes
 
 1. The classifier can be run without the application.
-   ```bash
+   
    Rscript mgCST_classifier_v2.R path/to/VIRGO2_Compiled.summary.NR.txt path/to/VIRGO2_annotation_files path/to/mgCST-classifier-master n_cores
+   
+   Example:
+   ```bash
+   Rscript mgCST_classifier_v2.R VIRGO2_Compiled.summary.NR.txt ./VIRGO2 ./mgCST-classifier-master 4
    ```
+   Output is written to current directory. Each output file is dated.
 
-2. Adjust the maximum size of uploaded file (if needed, currently, the limit is set to 30GB):
+3. Adjust the maximum size of uploaded file (if needed, currently, the limit is set to 30GB):
 
    a. Access the Streamlit config file (```.streamlit/config.toml```)
     ```bash
