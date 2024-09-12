@@ -14,6 +14,13 @@ This application provides visualizations and tools related to [Metagenomic Commu
     ```
 3. Download the necessary data and media:
     ```bash
+    # Download data related to the application
+    wget <download_url>
+    # Download medias related to the application
+    wget <download_url>
+    # Download VIRGO2 annotation files related to the application and the classifier alone
+    wget <download_url>
+    # Download mgCST-classifier-master directory related to the application and the classifier alone
     wget <download_url>
     ```
 4. Create and activate the conda environment:
