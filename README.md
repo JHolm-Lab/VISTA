@@ -32,7 +32,7 @@ This application provides visualizations and tools related to [Metagenomic Commu
 
 1. The classifier can be run without the application.
    
-   Rscript mgCST_classifier_v2.R path/to/VIRGO2_Compiled.summary.NR.txt path/to/VIRGO2_annotation_files path/to/mgCST-classifier-master n_cores
+   Rscript mgCST_classifier_v2.R path/to/VIRGO2_Compiled_Output.txt path/to/VIRGO2_annotation_files path/to/mgCST-classifier-master n_cores
    
    Example:
    ```bash
