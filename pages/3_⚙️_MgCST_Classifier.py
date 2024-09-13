@@ -7,11 +7,10 @@ import pandas as pd
 from streamlit_pdf_viewer import pdf_viewer
 import io
 import zipfile
-import base64
 
 # Clean folder before running the classifier (remove former outputs)
 for file in os.listdir():
-    if file.startswith("mgCSTs_") or file.startswith("norm_counts_") or file.startswith("relabund_w_"):
+    if file.startswith("mgCSTs_") or file.startswith("norm_counts_") or file.startswith("relabund_w_") or file.startswith("mgCST_heatmap"):
         os.remove(file)
 
 # Set page layout
@@ -34,11 +33,10 @@ with st.form(key='classifier_form'):
     
     submit_button = st.form_submit_button(label='Submit')
 
-if submit_button and uploaded_file is None :
+if submit_button and uploaded_file is None:
     st.warning("Select an input file")
 
 if submit_button and uploaded_file is not None:
-
     # Save the uploaded file to a temporary location
     with tempfile.NamedTemporaryFile(delete=False, suffix=".txt") as temp_file:
         temp_file.write(uploaded_file.read())
@@ -59,27 +57,36 @@ if submit_button and uploaded_file is not None:
         str(num_cores)
     ]
 
+    # Initialize progress bar
     with st.spinner('Running the classifier...'):
+    
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
 
         if process.returncode == 0:
-
             os.remove(temp_file_path)
 
             # Collect CSV and PDF files
             file_list = []
             csv_files = [file for file in os.listdir() if file.endswith(".csv")]
+            pdf_files = [file for file in os.listdir() if file.endswith(".pdf")]
+
+            total_files = len(csv_files) + len(pdf_files)
+            processed_files = 0
+
+            # Update progress for CSV files
             for file in csv_files:
                 file_list.append({'file_name': file, 'data': pd.read_csv(file).to_csv(index=False)})
 
-            pdf_files = [file for file in os.listdir() if file.endswith(".pdf")]
+            # Update progress for PDF files
             for pdf_file in pdf_files:
                 with open(pdf_file, 'rb') as f:
                     file_list.append({'file_name': pdf_file, 'data': f.read()})
 
             st.success("mgCSTs classifier executed successfully!")
-            st.warning("Don't forget to download your files", icon="⚠️")
+
+            container = st.container()
+            container.info("Don't forget to download your files", icon="⚠️")
 
             # Create a ZIP file in memory
             zip_buffer = io.BytesIO()
@@ -89,35 +96,7 @@ if submit_button and uploaded_file is not None:
 
             zip_buffer.seek(0)
 
-
-            # # Encode the ZIP file to base64
-            # base64_zip = base64.b64encode(zip_buffer.getvalue()).decode('utf-8')
-
-            # # Custom download button with HTML and CSS
-            # download_button = st.markdown(
-            #     f"""
-            #     <a href="data:application/zip;base64,{base64_zip}" 
-            #     download="all_files.zip" 
-            #     style="
-            #         display: inline-block;
-            #         padding: 5px 20px;
-            #         background-color: #82CAFF;
-            #         color: black;
-            #         width: 300px;
-            #         height: 35px;
-            #         text-align: center;
-            #         text-decoration: none;
-            #         font-size: 16px;
-            #         border-radius: 8px;
-            #         font-family: Arial, sans-serif;
-            #         ">
-            #     Download all files as ZIP
-            #     </a>
-            #     """,
-            #     unsafe_allow_html=True
-            # )
-            
-            st.download_button(label="Download all files as ZIP", data=zip_buffer, file_name="all_files.zip", mime="application/zip")
+            container.download_button(label="Download all files", data=zip_buffer, file_name="mgCST_classifier_v2_outputs.zip", mime="application/zip")
 
             st.title("Outputs")
 
@@ -145,5 +124,4 @@ if submit_button and uploaded_file is not None:
 
         else:
             st.error("Error executing R script")
-
-    
+            st.error(stderr)
