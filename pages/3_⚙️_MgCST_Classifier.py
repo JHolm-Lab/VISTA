@@ -71,9 +71,6 @@ if submit_button and uploaded_file is not None:
             csv_files = [file for file in os.listdir() if file.endswith(".csv")]
             pdf_files = [file for file in os.listdir() if file.endswith(".pdf")]
 
-            total_files = len(csv_files) + len(pdf_files)
-            processed_files = 0
-
             # Update progress for CSV files
             for file in csv_files:
                 file_list.append({'file_name': file, 'data': pd.read_csv(file).to_csv(index=False)})
@@ -98,6 +95,7 @@ if submit_button and uploaded_file is not None:
 
             container.download_button(label="Download all files", data=zip_buffer, file_name="mgCST_classifier_v2_outputs.zip", mime="application/zip")
 
+            st.container()
             st.title("Outputs")
 
             # Display CSV and PDF files in columns
