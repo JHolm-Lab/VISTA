@@ -23,22 +23,20 @@ This application provides visualizations and tools related to [Metagenomic Commu
     # Download data related to the application
     wget https://figshare.com/ndownloader/files/49149751
     unzip 49149751
-    rm -rf 49149751 __MACOSX
     
     # Download medias related to the application
     wget https://figshare.com/ndownloader/files/49149853
     unzip 49149853
-    rm -rf 49149853 __MACOSX
     
     # Download VIRGO2 annotation files related to the application and the classifier alone
     wget https://figshare.com/ndownloader/files/49149880
     unzip 49149880
-    rm -rf 49149880 __MACOSX
     
     # Download mgCST-classifier-master directory related to the application and the classifier alone
     wget https://figshare.com/ndownloader/files/49178470
     unzip 49178470
-    rm -rf 49178470 __MACOSX
+
+    rm -rf 49149751 49149853 49149880 49178470 __MACOSX 
     ```
     
 5. Create the conda environment:
