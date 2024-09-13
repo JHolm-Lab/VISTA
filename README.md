@@ -75,19 +75,19 @@ This application provides visualizations and tools related to [Metagenomic Commu
    
    Example:
    ```bash
-   Rscript mgCST_classifier_v2.R VIRGO2_Compiled.summary.NR.txt ./VIRGO2 ./mgCST-classifier-master 4
+   Rscript mgCST_classifier_v2.R VIRGO2_Compiled_example.summary.NR.txt ./VIRGO2 ./mgCST-classifier-master 4
    ```
-   Output is written to current directory. Each output file is dated.
+   Output is written to current directory.
+
+   Each output file is dated.
 
 3. Adjust the maximum size of uploaded file (if needed, currently, the limit is set to 30GB):
 
    a. Access the Streamlit config file (```.streamlit/config.toml```)
-    ```bash
-    cd path/to/mgCST-classifier-v2/.streamlit
-    ```
+
    b. Modify the ```config.toml``` file
    ```toml
    [server]
 
-    maxUploadSize = 30000
+    maxUploadSize = 30000   # modify this value if needed
    ```
