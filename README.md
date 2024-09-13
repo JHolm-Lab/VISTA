@@ -17,7 +17,6 @@ This application provides visualizations and tools related to [Metagenomic Commu
     ```bash
     cd mgCST-classifier-v2
     ```
-
 4. Download and unzip the [necessary data and media]() into the application folder:
     ```bash
     # Download data related to the application
@@ -36,7 +35,24 @@ This application provides visualizations and tools related to [Metagenomic Commu
     wget https://figshare.com/ndownloader/files/49178470
     unzip 49178470
 
+    # Remove zip files and hidden folder
     rm -rf 49149751 49149853 49149880 49178470 __MACOSX 
+    ```
+   The command ```ls -l``` should return this :
+   
+    ```bash
+   (base) mgCST-classifier-v2 % ls -l
+   total 29664
+   -rw-r--r--   1 amaros  staff       955 Sep 13 12:51 0_🏠_Home.py
+   -rw-r--r--   1 amaros  staff      2397 Sep 13 12:51 README.md
+   drwxr-xr-x   6 amaros  staff       192 Sep 10 09:10 VIRGO2
+   -rw-r--r--   1 amaros  staff  15152457 Sep 13 12:51 VIRGO2_Compiled_example.summary.NR.txt
+   drwxr-xr-x  14 amaros  staff       448 Sep 11 17:00 data
+   -rw-r--r--   1 amaros  staff       212 Sep 13 12:51 env.yaml
+   drwxr-xr-x   7 amaros  staff       224 Sep 10 09:26 medias
+   drwxr-xr-x   4 amaros  staff       128 Sep 13 12:42 mgCST-classifier-master
+   -rw-r--r--   1 amaros  staff     17418 Sep 13 12:51 mgCST_classifier_v2.R
+   drwxr-xr-x   5 amaros  staff       160 Sep 13 12:51 pages
     ```
     
 5. Create the conda environment:
@@ -53,7 +69,7 @@ This application provides visualizations and tools related to [Metagenomic Commu
 
 1. The classifier can be run without the application.
    
-   Rscript mgCST_classifier_v2.R path/to/VIRGO2_Compiled_Output.txt path/to/VIRGO2_annotation_files path/to/mgCST-classifier-master n_cores
+   Rscript mgCST_classifier_v2.R path/to/VIRGO2_Compiled_Output.txt path/to/VIRGO2 path/to/mgCST-classifier-master n_cores
    
    Example:
    ```bash
