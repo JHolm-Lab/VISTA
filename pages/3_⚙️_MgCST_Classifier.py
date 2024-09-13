@@ -5,47 +5,44 @@ import tempfile
 import multiprocessing
 import pandas as pd
 from streamlit_pdf_viewer import pdf_viewer
+import io
+import zipfile
+import base64
 
+# Clean folder before running the classifier (remove former outputs)
+for file in os.listdir():
+    if file.startswith("mgCSTs_") or file.startswith("norm_counts_") or file.startswith("relabund_w_"):
+        os.remove(file)
+
+# Set page layout
 st.set_page_config(layout="wide")
 st.sidebar.subheader("Contact")
 st.sidebar.write("jholm@som.umaryland.edu")
 
-
-# Streamlit app title
 st.title("MgCSTs classifier")
 
-st.container()
-col1, col2 = st.columns(2)
+# Create a form for user input
+with st.form(key='classifier_form'):
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("CPU")
+        available_cores = multiprocessing.cpu_count()
+        n_cores = st.slider("Choose a number of CPU to use", 2, available_cores, 4)
+    with col2:
+        st.subheader("VIRGO2 output")
+        uploaded_file = st.file_uploader("Select a .txt file from VIRGO2 after mapping and compiled steps", type="txt")
+    
+    submit_button = st.form_submit_button(label='Submit')
 
-with col1 :
-    st.subheader("Select number of CPUs:")
+if submit_button and uploaded_file is None :
+    st.warning("Select an input file")
 
-    # Display the number of available cores
-    available_cores = multiprocessing.cpu_count()
-    st.write(f"Available CPUs: {available_cores}")
+if submit_button and uploaded_file is not None:
 
-    # Slider for selecting the number of cores to use
-    n_cores = st.slider("CPU:", 2, available_cores, 4)
-
-    # # Display the selected number of cores
-    # st.write(f"The classifier will use {n_cores} cores")
-
-with col2:
-    st.subheader("Import VIRGO2 output")
-
-    # File uploader widget
-    uploaded_file = st.file_uploader("Select a .txt file from VIRGO2 after mapping and compiled steps", type="txt")
-
-# Check if a file has been uploaded
-if uploaded_file is not None:
     # Save the uploaded file to a temporary location
     with tempfile.NamedTemporaryFile(delete=False, suffix=".txt") as temp_file:
         temp_file.write(uploaded_file.read())
         temp_file_path = temp_file.name
-
-    # Read the uploaded file
-    with open(temp_file_path, "r") as file:
-        file_content = file.read()
 
     # Execute the R script
     r_script_path = "mgCST_classifier_v2.R"
@@ -53,7 +50,6 @@ if uploaded_file is not None:
     mgCST_classifier_master_path = "mgCST-classifier-master"
     num_cores = n_cores
 
-    # Build the command to run the R script
     command = [
         "Rscript",
         r_script_path,
@@ -64,43 +60,90 @@ if uploaded_file is not None:
     ]
 
     with st.spinner('Running the classifier...'):
-        # Run the R script
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
 
-        # Display output or error
         if process.returncode == 0:
+
+            os.remove(temp_file_path)
+
+            # Collect CSV and PDF files
+            file_list = []
+            csv_files = [file for file in os.listdir() if file.endswith(".csv")]
+            for file in csv_files:
+                file_list.append({'file_name': file, 'data': pd.read_csv(file).to_csv(index=False)})
+
+            pdf_files = [file for file in os.listdir() if file.endswith(".pdf")]
+            for pdf_file in pdf_files:
+                with open(pdf_file, 'rb') as f:
+                    file_list.append({'file_name': pdf_file, 'data': f.read()})
+
             st.success("mgCSTs classifier executed successfully!")
+            st.warning("Don't forget to download your files", icon="⚠️")
+
+            # Create a ZIP file in memory
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+                for file_info in file_list:
+                    zip_file.writestr(file_info['file_name'], file_info['data'])
+
+            zip_buffer.seek(0)
+
+
+            # # Encode the ZIP file to base64
+            # base64_zip = base64.b64encode(zip_buffer.getvalue()).decode('utf-8')
+
+            # # Custom download button with HTML and CSS
+            # download_button = st.markdown(
+            #     f"""
+            #     <a href="data:application/zip;base64,{base64_zip}" 
+            #     download="all_files.zip" 
+            #     style="
+            #         display: inline-block;
+            #         padding: 5px 20px;
+            #         background-color: #82CAFF;
+            #         color: black;
+            #         width: 300px;
+            #         height: 35px;
+            #         text-align: center;
+            #         text-decoration: none;
+            #         font-size: 16px;
+            #         border-radius: 8px;
+            #         font-family: Arial, sans-serif;
+            #         ">
+            #     Download all files as ZIP
+            #     </a>
+            #     """,
+            #     unsafe_allow_html=True
+            # )
+            
+            st.download_button(label="Download all files as ZIP", data=zip_buffer, file_name="all_files.zip", mime="application/zip")
+
             st.title("Outputs")
-            # st.text(stdout.decode("utf-8"))
+
+            # Display CSV and PDF files in columns
+            col1, col2 = st.columns(2)
+            col3, col4 = st.columns(2)
+
+            for file in csv_files:
+                if file.startswith("norm_"):
+                    with col1:
+                        st.subheader(f"{file}")
+                        st.dataframe(pd.read_csv(file).head(10))
+                elif file.startswith("relabund_"):
+                    with col2:
+                        st.subheader(f"{file}")
+                        st.dataframe(pd.read_csv(file).head(10))
+                elif file.startswith("mgCST"):
+                    with col3:
+                        st.subheader(f"{file}")
+                        st.dataframe(pd.read_csv(file).head(10))
+
+            for file in pdf_files:
+                with col4:
+                    pdf_viewer(file)
 
         else:
             st.error("Error executing R script")
-            # st.text(stderr.decode("utf-8"))
 
-        # Delete temporary file after execution
-        os.remove(temp_file_path)
-
-        st.container()
-        # Display CSV files from classifier
-        col1, col2 = st.columns(2)
-        csv_files = [file for file in os.listdir() if file.endswith(".csv")]
-
-        for idx, file in enumerate(csv_files):
-            if file.startswith("norm_"):
-                with col1 :
-                    st.subheader(f"{file}")
-                    st.dataframe(pd.read_csv(file))
-            else:
-                with col2 :
-                    st.subheader(f"{file}")
-                    st.dataframe(pd.read_csv(file))
-
-        # Display PDF file from classifier
-        pdf_files = [file for file in os.listdir() if file.endswith(".pdf")]
-
-        if pdf_files:
-            for file in pdf_files:
-                pdf_viewer(file)
-
-                
+    
