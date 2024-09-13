@@ -17,7 +17,7 @@ This application provides visualizations and tools related to [Metagenomic Commu
     ```bash
     cd mgCST-classifier-v2
     ```
-4. Download and unzip the [necessary data and media]() into the application folder:
+4. Download and unzip the [necessary data and media](https://figshare.com/account/home#/projects/220450) into the application folder:
     ```bash
     # Download data related to the application
     wget https://figshare.com/ndownloader/files/49149751
