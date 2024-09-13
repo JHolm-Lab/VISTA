@@ -2,17 +2,23 @@
 
 This application provides visualizations and tools related to [Metagenomic Community State Types v2] (refer to the paper). It also offers a user-friendly interface to run the classifier on [VIRGO2](reference VIRGO2 paper) output. The application is run through a Conda environment, which can be easily created using a provided YAML file. Follow the steps below to set it up:
 
-## Run the application
+# Run the application
 
-1. Clone the repository:
+1. Navigate to the folder where you want to save the application
+   ```bash
+    cd path/to/folder
+   ```
+
+2. Clone the repository:
     ```bash
     git clone https://github.com/JHolm-Lab/mgCST-classifier-v2.git
     ```
-2. Navigate to the application directory:
+3. Navigate to the application directory:
     ```bash
-    cd /path/to/mgCST-classifier-v2
+    cd mgCST-classifier-v2
     ```
-3. Download the necessary data and media:
+
+4. Download and unzip the [necessary data and media]() into the application folder:
     ```bash
     # Download data related to the application
     wget <download_url>
@@ -30,15 +36,13 @@ This application provides visualizations and tools related to [Metagenomic Commu
     wget <download_url>
     unzip mgCST-classifier-master.zip
     ```
-4. Create and activate the conda environment:
+5. Create the conda environment:
     ```bash
     conda env create -f env.yaml
     ```
+6. Run the app:
     ```bash
     conda activate mgcst_app
-    ```
-5. Run the app:
-    ```bash
     streamlit run 0_🏠_Home.py
     ```
 
