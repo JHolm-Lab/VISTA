@@ -6,7 +6,7 @@ This application provides visualizations and tools related to [Metagenomic Commu
 
 1. Navigate to the folder where you want to save the application
    ```bash
-    cd path/to/folder
+    cd <path_to_your_folder>
    ```
 
 2. Clone the repository:
@@ -21,21 +21,26 @@ This application provides visualizations and tools related to [Metagenomic Commu
 4. Download and unzip the [necessary data and media]() into the application folder:
     ```bash
     # Download data related to the application
-    wget <download_url>
-    unzip data.zip
+    wget https://figshare.com/ndownloader/files/49149751
+    unzip 49149751
+    rm -rf 49149751 __MACOSX
     
     # Download medias related to the application
-    wget <download_url>
-    unzip medias.zip
+    wget https://figshare.com/ndownloader/files/49149853
+    unzip 49149853
+    rm -rf 49149853 __MACOSX
     
     # Download VIRGO2 annotation files related to the application and the classifier alone
-    wget <download_url>
-    unzip VIRGO2.zip
+    wget https://figshare.com/ndownloader/files/49149880
+    unzip 49149880
+    rm -rf 49149880 __MACOSX
     
     # Download mgCST-classifier-master directory related to the application and the classifier alone
-    wget <download_url>
-    unzip mgCST-classifier-master.zip
+    wget https://figshare.com/ndownloader/files/49178470
+    unzip 49178470
+    rm -rf 49178470 __MACOSX
     ```
+    
 5. Create the conda environment:
     ```bash
     conda env create -f env.yaml
