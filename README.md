@@ -1,6 +1,6 @@
 # MgCST classifier v2
 
-This application provides visualizations and tools related to [Metagenomic Community State Types v2] (refer to the paper). It also offers a user-friendly interface to run the classifier on [VIRGO2](reference VIRGO2 paper) output. The application is run through a Conda environment, which can be easily created using a provided YAML file. Follow the steps below to set it up:
+This application provides visualizations and tools related to [Metagenomic Community State Types v2](). It also offers a user-friendly interface to run the classifier on [VIRGO2]() output. The application is run through a Conda environment, which can be easily created using a provided YAML file. Follow the steps below to set it up:
 
 # Run the application
 
