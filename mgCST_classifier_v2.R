@@ -95,7 +95,7 @@ a <- which(!colnames(genes) %in% exclude_cols)[1]       # Find the index of the 
 
 genes.ngl <- copy(genes)
 genes.ngl[, (a:ncol(genes.ngl)) := lapply(.SD, function(x) x * 150 / Length), .SDcols=a:ncol(genes.ngl)]
-fwrite(genes.ngl, paste(wd, "/norm_counts_genes_", today2, ".csv", sep=""))
+# fwrite(genes.ngl, paste(wd, "/norm_counts_genes_", today2, ".csv", sep=""))
 
 #######################################################     CREATE GENE PRESENCE/ABSENCE TABLE     ################################################################################
 
