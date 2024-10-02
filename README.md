@@ -21,13 +21,13 @@ Required packages are incorporated in the R script ```mgCST_classifier_v2.R```
 
 # Run the application locally
 
-1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/49573392)
+1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/49574253)
    ```bash
    # Download the image via the provided link or by running the following:
-   wget https://figshare.com/ndownloader/files/49573392
+   wget https://figshare.com/ndownloader/files/49574253
 
    # Unzip the archive
-   unzip 49573392
+   unzip 49574253
    ```
    
 2. Navigate to the application directory:
