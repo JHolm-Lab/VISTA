@@ -6,7 +6,10 @@ This application provides visualizations and tools related to [Metagenomic Commu
 
 1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/49573392)
    ```bash
+   # Download the image via the provided link or by running the following:
    wget https://figshare.com/ndownloader/files/49573392
+
+   # Unzip the archive
    unzip 49573392
    ```
    
