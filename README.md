@@ -4,9 +4,10 @@ This application provides visualizations and tools related to [Metagenomic Commu
 
 # Run the application locally
 
-1. Download the [zip image of the application](https://figshare.com/ndownloader/files/49573392)
+1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/49573392)
    ```bash
-    wget https://figshare.com/ndownloader/files/49573392
+   wget https://figshare.com/ndownloader/files/49573392
+   unzip 49573392
    ```
    
 2. Navigate to the application directory:
