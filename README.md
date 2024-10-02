@@ -2,6 +2,23 @@
 
 This application provides visualizations and tools related to [Metagenomic Community State Types v2](). It also offers a user-friendly interface to run the classifier on [VIRGO2]() output. The application is run through a Conda environment, which can be easily created using a provided YAML file. Follow the steps below to set it up:
 
+# Dependencies
+
+| Python (v3.8+)         | R (v4.3+)          |
+|------------------------|--------------------|
+| streamlit              | randomForestSRC     |
+| pandas                 | gplots             |
+| numpy                  | data.table         |
+| plotly                 | dplyr              |
+| streamlit-pdf-viewer   | parallel           |
+
+Python dependencies can be installed using:
+```bash
+pip install -r requirements.txt
+```
+
+Required packages are incorporated in the R script ```mgCST_classifier_v2.R```
+
 # Run the application locally
 
 1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/49573392)
@@ -17,14 +34,9 @@ This application provides visualizations and tools related to [Metagenomic Commu
     ```bash
     cd mgCST-classifier-v2
     ```
-    
-3. Create the conda environment:
+
+3. Run the app:
     ```bash
-    conda env create -f env.yaml
-    ```
-4. Run the app:
-    ```bash
-    conda activate mgcst_app
     streamlit run 0_🏠_Home.py
     ```
 
