@@ -4,25 +4,21 @@ This application provides visualizations and tools related to [Metagenomic Commu
 
 # Run the application locally
 
-1. Navigate to the folder where you want to save the application
+1. Download the [zip image of the application](https://figshare.com/ndownloader/files/49573392)
    ```bash
-    cd <path_to_your_folder>
+    wget https://figshare.com/ndownloader/files/49573392
    ```
-
-2. Clone the repository:
-    ```bash
-    git clone https://github.com/JHolm-Lab/mgCST-classifier-v2.git
-    ```
-3. Navigate to the application directory:
+   
+2. Navigate to the application directory:
     ```bash
     cd mgCST-classifier-v2
     ```
     
-4. Create the conda environment:
+3. Create the conda environment:
     ```bash
     conda env create -f env.yaml
     ```
-5. Run the app:
+4. Run the app:
     ```bash
     conda activate mgcst_app
     streamlit run 0_🏠_Home.py
