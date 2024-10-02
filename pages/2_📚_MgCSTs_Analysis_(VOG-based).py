@@ -183,4 +183,4 @@ with st.expander("Show table"):
 
 st.subheader("MgCSTs heatmap")
 
-pdf_viewer("medias/mgCST_heatmap.pdf")
+pdf_viewer("medias/mgCST_VOG_heatmap.pdf")
