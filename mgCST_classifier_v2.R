@@ -285,7 +285,7 @@ yue_distance<-function(row, median){
 }
 
 ## READ IN REFERENCE CENTROIDS
-reference_centroids <- as.data.frame(fread(paste(args[3], "/vog_mgCST_centroids_20Aug2024.csv", sep="")))
+reference_centroids <- as.data.frame(fread(paste(args[3], "/vog_mgCST_centroids_24Sep2024.csv", sep="")))
 rownames(reference_centroids) <- reference_centroids$mgCST
 reference_centroids$mgCST <- NULL
 
