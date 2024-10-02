@@ -25,7 +25,7 @@ This application provides visualizations and tools related to [Metagenomic Commu
     streamlit run 0_🏠_Home.py
     ```
 
-    You can test it with the example file provided : ```VIRGO2_Compiled_example.summary.NR.txt```
+    You can test the classifier through the application using the provided example file: ```VIRGO2_Compiled_example.summary.NR.txt```
 
 ## Notes
 
