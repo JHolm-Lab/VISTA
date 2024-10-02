@@ -357,12 +357,13 @@ write.csv(relabund["mgCST"], paste(wd, "/mgCSTs_", today2, ".csv", sep=""), row.
 
 ## PLOT HEATMAP
 mgCST<-as.data.frame(rbind(c("1", "#FE0308"), c("2", "#F54C5E"), c("3", "#F07084"), c("4", "#EC94A5"),c("5", "#F0BCCC"),c("6", "#F6D3DA"),
-                           c("7", "#86C61A"), c("8", "#B4DB29"),
-                           c("9", "#FF7200"), c("10", "#F68A11"), c("11", "#F8A40E"),
-                           c("12", "#FAE50D"),c("13", "#F3F40E"),c("14", "#F3F45F"), 
-                           c("15", "#448A73"),c("16", "#BCD6CD"),
-                           c("17", "#221886"),c("18", "#3E3792"), c("19", "#5D579E"),c("20", "#7C76AC"),c("21", "#9A98BF"),
-                           c("22", "#c997cc"),c("23", "#0d4018"),c("24", "#a16060"),c("25", "#c1ffc1"),c("26", "#8c8c8c"), c("", "white"), c("NA", "white")))
+                           c("7", "#86C61A"), c("8", "#B4DB29"), c("9", "#0F411A"), 
+                           c("10", "#F68A11"), c("11", "#FF981C"),c("12", "#FFA435"),
+                           c("13", "#FAE727"),c("14", "#FBEA3F"), c("15", "#FBED58"),
+                           c("16", "#E1C775"),
+                           c("17", "#589682"),c("18", "#6BA290"),
+                           c("19", "#444DAC"),c("20", "#6B7EC0"),c("21", "#829CCD"),c("22", "#3C44A8"),c("23", "#676EBC"),c("24", "#2C31A0"),
+                           c("25", "#C7FFC7"), c("", "white"), c("NA", "white")))
 
 names(mgCST)<-c("mgCST", "color")
 colfunc <- colorRampPalette(c("khaki", "limegreen", "darkslategray1", "mediumblue", "magenta", "red"))
