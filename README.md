@@ -6,18 +6,18 @@ This application provides visualizations and tools related to [Metagenomic Commu
 
 | Python (v3.8+)         | R (v4.3+)          |
 |------------------------|--------------------|
-| streamlit              | randomForestSRC     |
+| streamlit              | randomForestSRC    |
 | pandas                 | gplots             |
 | numpy                  | data.table         |
 | plotly                 | dplyr              |
 | streamlit-pdf-viewer   | parallel           |
 
-Python dependencies can be installed using:
+Python packages can be installed using:
 ```bash
 pip install -r requirements.txt
 ```
 
-Required packages are incorporated in the R script ```mgCST_classifier_v2.R```
+Required R packages are incorporated in the script ```mgCST_classifier_v2.R```
 
 # Run the application locally
 
