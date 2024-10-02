@@ -1,1 +1,4 @@
 data/gene_pa_count.pkl filter=lfs diff=lfs merge=lfs -text
+data/VOG_gene_product.csv filter=lfs diff=lfs merge=lfs -text
+data/hover_dict.pkl filter=lfs diff=lfs merge=lfs -text
+data/reorder_dataframe.pkl filter=lfs diff=lfs merge=lfs -text
