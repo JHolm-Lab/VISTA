@@ -132,13 +132,8 @@ with col2 :
 
 with col3 :
     new_vs_old = pd.read_csv("data/new_vs_old_mgcsts.csv")
-    # old_mgCST = File_S6[['mapID', 'mgCST']]
-    # old_mgCST = old_mgCST.rename(columns={'mapID':'sampleID'})
-    # new_mgCST = mgcsts_samples
-    # new_vs_old = pd.merge(new_mgCST, old_mgCST, on='sampleID', how='inner')
-    # st.write(new_vs_old.shape)
-    bubble_data = new_vs_old.groupby(['mgCST_x', 'mgCST_y']).size().reset_index(name='count')
-    bubble_data = bubble_data.rename(columns={"mgCST_x":"mgCST", "mgCST_y":"old_mgCST"})
+    bubble_data = new_vs_old.groupby(['new_mgCST', 'old_mgCST']).size().reset_index(name='count')
+    bubble_data = bubble_data.rename(columns={"new_mgCST":"mgCST"})
 
     bubble_color = []
     mgcsts['mgCST'] = mgcsts['mgCST'].astype(int)

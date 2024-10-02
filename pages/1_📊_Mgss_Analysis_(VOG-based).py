@@ -33,12 +33,14 @@ gene_count = load_pkl('data/gene_pa_count.pkl')
 
 ######################################## ----- DATA PROCESSING ----- ########################################
 
-not_to_cluster = ["Alterileibacterium", "Anaerococcus", "Bacteroides", "Campylobacter",
-                "Corynebacterium", "Gardnerella", "Gulosibacter", "Lactobacillus", 
-                "Limosilactobacillus", "MultiGenera", "Porphyromonas", "Prevotella", "Streptococcus"]
+# not_to_cluster = ["Alterileibacterium", "Anaerococcus", "Bacteroides", "Campylobacter",
+#                 "Corynebacterium", "Gardnerella", "Gulosibacter", "Lactobacillus", 
+#                 "Limosilactobacillus", "MultiGenera", "Porphyromonas", "Prevotella", "Streptococcus"]
 
-vog_species = vog_mgss_coverage['sub_species'].apply(lambda x : x.split(".")[0]).unique()
-species = [s for s in vog_species if s not in not_to_cluster]
+# vog_species = vog_mgss_coverage['sub_species'].apply(lambda x : x.split(".")[0]).unique()
+# species = [s for s in vog_species if s not in not_to_cluster]
+
+species = vog_mgss_coverage[vog_mgss_coverage['sub_species'].str.contains("\.")]['sub_species'].apply(lambda x : x.split(".")[0]).unique()
 
 ######################################## ----- PAGE CONTENT ----- ########################################
 
