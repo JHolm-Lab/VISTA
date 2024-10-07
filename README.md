@@ -1,8 +1,8 @@
 # MgCST classifier v2
 
-This application provides visualizations and tools related to [Metagenomic Community State Types v2](link to mgCST v2 paper). 
+This application provides visualizations and tools related to Metagenomic Community State Types v2. 
 
-It also offers a user-friendly interface to run the classifier on [VIRGO2](link to VIRGO2 paper) output.
+It also offers a user-friendly interface to run the classifier on VIRGO2 output.
 
 # Requirements
 The application is run through Streamlit with the following requirements:
