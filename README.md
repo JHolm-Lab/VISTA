@@ -1,8 +1,13 @@
 # MgCST classifier v2
 
-This application provides visualizations and tools related to [Metagenomic Community State Types v2](). It also offers a user-friendly interface to run the classifier on [VIRGO2]() output. The application is run through a Conda environment, which can be easily created using a provided YAML file. Follow the steps below to set it up:
+This application provides visualizations and tools related to [Metagenomic Community State Types v2](link to mgCST v2 paper). 
 
-# Dependencies
+It also offers a user-friendly interface to run the classifier on [VIRGO2](link to VIRGO2 paper) output.
+
+# Requirements
+The application is run through Streamlit with the following requirements:
+
+<div align="center">
 
 | Python (v3.8+)         | R (v4.3+)          |
 |------------------------|--------------------|
@@ -11,6 +16,8 @@ This application provides visualizations and tools related to [Metagenomic Commu
 | numpy                  | data.table         |
 | plotly                 | dplyr              |
 | streamlit-pdf-viewer   | parallel           |
+
+</div>
 
 Python packages can be installed using:
 ```bash
