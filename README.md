@@ -28,10 +28,10 @@ Required R packages are incorporated in the script ```mgCST_classifier_v2.R```
 
 # Run the application locally
 
-1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/49574253)
+1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/49650609)
    ```bash
    # Download the image via the provided link or by running the following:
-   wget https://figshare.com/ndownloader/files/49574253
+   wget https://figshare.com/ndownloader/files/49650609
 
    # Unzip the archive
    unzip 49574253
