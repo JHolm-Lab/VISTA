@@ -34,7 +34,7 @@ Required R packages are incorporated in the script ```mgCST_classifier_v2.R```
    wget https://figshare.com/ndownloader/files/49650609
 
    # Unzip the archive
-   unzip 49574253
+   unzip 49650609
    ```
    
 2. Navigate to the application directory:
@@ -51,7 +51,7 @@ Required R packages are incorporated in the script ```mgCST_classifier_v2.R```
 
 ## Notes
 
-1. The classifier can be run without the application.
+1. The classifier can be run without the application. After downloading and unzipping, run the following:
       
    Example:
    ```bash
