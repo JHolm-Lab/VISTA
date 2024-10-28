@@ -13,10 +13,7 @@ if (!require(data.table, quietly = TRUE)) install.packages("data.table", quiet =
 ### Added parallel processing (mc.cores) + created functions to speed up processing time
 ##### Requires submitting script with a 4th argument, which is the number of cores/threads
 
-
-
 #######################################################     IMPORT PACKAGES     ###################################################################################################
-
 library(randomForestSRC)
 library(gplots)
 library(dplyr)
@@ -37,7 +34,6 @@ if (is.na(num_cores) || num_cores < 1) {
 }
 
 #######################################################     CAPTURE THE DATE FOR THE OUTPUT     ###################################################################################
-
 today <- strsplit(date(), " ")
 month <- today[[1]][2]
 if (today[[1]][3] %in% "") {
@@ -51,21 +47,17 @@ today2 <- paste(day, month, year, sep="")
 print(today2)
 
 #######################################################     READ THE MGSS.CLASSIFIER RDS FILE     #################################################################################
-
 mgss.classifiers <- readRDS(paste(args[3], "/vog.mgss_classifier.RDS", sep=""))
 if (!exists("mgss.classifiers")) {
   print("Path to mgCST-classifier-master not correct")
   stop()
 }
 
-
 #######################################################     READ THE VIRGO2 COMPILED OUTPUT FILE     ##############################################################################
-
 counts.genes <- fread(args[1])
 names(counts.genes)[1] <- "Gene"
 
 #######################################################     READ THE VIRGO2 ANNOTATION FILES     ##################################################################################
-
 gene.length <- fread(paste(args[2], "/0.VIRGO2.geneLength.txt.gz", sep=""))
 names(gene.length) <- c("Gene", "Length")
 
@@ -79,7 +71,6 @@ names(vog.tbl) <- c("Gene", "Taxa", "VOG")
 print("Data and libraries importation : OK")
 
 #######################################################     MERGE ANNOTATION FILES     ############################################################################################
-
 genes <- merge(gene.length, taxon.tbl[, .(Gene, Taxa)], by='Gene', all.x=FALSE, all.y=FALSE)
 genes <- merge(genes, vog.tbl[, .(Gene, VOG)], by='Gene', all.x=FALSE, all.y=FALSE)
 genes <- merge(genes, counts.genes, by='Gene', all.x=FALSE, all.y=FALSE)
@@ -89,7 +80,6 @@ print("Dimension of the final count table:")
 print(dim(genes))
 
 #######################################################     NORMALIZATION OF COUNTS BY 150/geneLength     #########################################################################
-
 exclude_cols <- c("Gene", "Length", "Taxa", "VOG")      # Specify the columns to exclude
 a <- which(!colnames(genes) %in% exclude_cols)[1]       # Find the index of the first column that is not in the exclude list
 
@@ -98,13 +88,11 @@ genes.ngl[, (a:ncol(genes.ngl)) := lapply(.SD, function(x) x * 150 / Length), .S
 # fwrite(genes.ngl, paste(wd, "/norm_counts_genes_", today2, ".csv", sep=""))
 
 #######################################################     CREATE GENE PRESENCE/ABSENCE TABLE     ################################################################################
-
 genes.ngl.pa <- copy(genes)
 genes.ngl.pa[, (a:ncol(genes.ngl.pa)) := lapply(.SD, function(x) ifelse(x * 150 / Length >= 0.5, 1, 0)), .SDcols=a:ncol(genes.ngl.pa)]
 
 
 #######################################################     CREATE SAMPLES BY TAXA TABLE WITH NORMALIZED COUNTS (INDEPENDANT OF GENE/VOG)     ####################################
-
 print("Process counts.mgss ...")
 counts.mgss <- genes.ngl[, !names(genes.ngl) %in% c("Gene", "Length", "Cat", "VOG"), with=FALSE]
 counts.mgss <- counts.mgss[Taxa != ""]
@@ -122,29 +110,23 @@ rownames(counts.mgss) <- counts.mgss$Sample
 counts.mgss$Sample <- NULL
 
 #######################################################     GROUP GENES TABLES BY VOGS TO RUN THE CLASSIFIER     ##################################################################
-
 concat_text <- function(x) {
   paste(x, collapse=", ")
 }
 
-
 vog.ngl <- genes.ngl[, c(.(Gene = concat_text(Gene)),lapply(.SD, sum)), by = .(VOG, Taxa), .SDcols = where(is.numeric)]
 vog.ngl.pa <- genes.ngl.pa[, c(.(Gene = concat_text(Gene)),lapply(.SD, sum)), by = .(VOG, Taxa), .SDcols = where(is.numeric)]
-
 
 print("Classify MGSS ...")
 
 #######################################################     CLASSIFY MGSS     #####################################################################################################
-
 counts.mgss.ngl <- copy(counts.mgss)
 genes.ngl <- vog.ngl
 genes.ngl.pa <- vog.ngl.pa
 
-# taxon <- "Gardnerella_vaginalis_A"
-
 run_classifier <- function(taxon) {
   tryCatch({
-    print(taxon)
+    # print(taxon)
     
     a <- which(!colnames(genes.ngl.pa) %in% exclude_cols)[1]
     
@@ -200,17 +182,13 @@ run_classifier <- function(taxon) {
 
 # Set the number of cores for parallel processing
 # num_cores <- detectCores() - 1  # Use one less than the total number of cores
-
 # Process taxa in parallel and collect results
 taxa <- names(counts.mgss)[names(counts.mgss) %in% names(mgss.classifiers)]
 results.1 <- mclapply(taxa, run_classifier, mc.cores = num_cores)
 counts.mgss.ngl.1 <- do.call(cbind, results.1)
 
-
 #######################################################     TRANSFER ALL NON MGSS TAXON COUNTS TO NGL     ##################################################################
-
 non_mgss_taxa <- names(counts.mgss)[!names(counts.mgss) %in% names(mgss.classifiers)]
-
 results.2 <- mclapply(non_mgss_taxa,
                       
                       function(taxon) {
@@ -254,11 +232,7 @@ fwrite(counts.mgss.ngl, paste(wd, "/norm_counts_mgSs_mgCST_", today2, ".csv", se
 
 print("norm_counts_mgSs_mgCST_ done")
 
-
-
 #######################################################     CENTROID CLASSIFIER     #####################################################################################################
-
-
 # Defining function to determine yue-clayton theta
 yue_distance<-function(row, median){
   #creating a counting variable to index the median list
@@ -306,17 +280,8 @@ print("Dimension of relabund:")
 relabund<-relabund[,names(reference_centroids)]
 n<-ncol(relabund)
 print(dim(relabund))
-# 
-# 
-# for(i in 1:26){
-#   print(i)
-#   mgCST<-paste("mgCST", i, sep=" ")
-#   relabund[[mgCST]]<-apply(relabund[,1:n], 1, function(x) yue_distance(x, reference_centroids[mgCST,]))
-# }
-
 
 ## FOR EACH MGCST, MEASURE THE SIMILARITY OF EACH SAMPLE TO EACH MGCST CENTROID USING YUE + CLAYTON THETA
-
 run_yue_distance <- function(i){
   tryCatch({
     mgCST<-paste("mgCST", i, sep=" ")
@@ -331,7 +296,7 @@ run_yue_distance <- function(i){
 # Set the number of cores for parallel processing
 # num_cores <- detectCores() - 1  # Use one less than the total number of cores
 
-i <- 1:26
+i <- 1:25
 results.yue.ditance <- mclapply(i, run_yue_distance, mc.cores = num_cores)
 # saveRDS(results.yue.ditance, paste(wd, "/results.yue.distance.RDS", sep=""))
 
@@ -349,7 +314,7 @@ colnames(relabund.yue.distance) <- paste("mgCST", 1:length(results.yue.ditance),
 m<-n+1
 relabund <- cbind(relabund, relabund.yue.distance)
 relabund[is.na(relabund)] <- 0
-relabund[["mgCST"]]<-colnames(relabund[,m:which(colnames(relabund) %in% "mgCST 26")])[apply(relabund[,m:which(colnames(relabund) %in% "mgCST 26")],1,which.max)]
+relabund[["mgCST"]]<-colnames(relabund[,m:which(colnames(relabund) %in% "mgCST 25")])[apply(relabund[,m:which(colnames(relabund) %in% "mgCST 25")],1,which.max)]
 
 write.csv(relabund, paste(wd, "/relabund_w_mgCSTs_", today2, ".csv", sep=""), row.names = TRUE, quote=F)
 write.csv(relabund["mgCST"], paste(wd, "/mgCSTs_", today2, ".csv", sep=""), row.names = TRUE, quote=F)
@@ -357,13 +322,13 @@ write.csv(relabund["mgCST"], paste(wd, "/mgCSTs_", today2, ".csv", sep=""), row.
 
 ## PLOT HEATMAP
 mgCST<-as.data.frame(rbind(c("1", "#FE0308"), c("2", "#F54C5E"), c("3", "#F07084"), c("4", "#EC94A5"),c("5", "#F0BCCC"),c("6", "#F6D3DA"),
-                           c("7", "#86C61A"), c("8", "#B4DB29"), c("9", "#0F411A"), 
-                           c("10", "#F68A11"), c("11", "#FF981C"),c("12", "#FFA435"),
-                           c("13", "#FAE727"),c("14", "#FBEA3F"), c("15", "#FBED58"),
-                           c("16", "#E1C775"),
-                           c("17", "#589682"),c("18", "#6BA290"),
-                           c("19", "#444DAC"),c("20", "#6B7EC0"),c("21", "#829CCD"),c("22", "#3C44A8"),c("23", "#676EBC"),c("24", "#2C31A0"),
-                           c("25", "#C7FFC7"), c("", "white"), c("NA", "white")))
+                           c("7", "#86C61A"), c("8", "#B4DB29"), 
+                           c("9", "#F68A11"), c("10", "#FF981C"),c("11", "#FFA435"),
+                           c("12", "#FAE727"),c("13", "#FBEA3F"), c("14", "#FBED58"),
+                           c("15", "#E1C775"),
+                           c("16", "#589682"),c("17", "#6BA290"),
+                           c("18", "#2C31A0"),c("19", "#3C44A8"),c("20", "#444DAC"),c("21", "#676EBC"),c("22", "#6B7EC0"),c("23", "#829CCD"),
+                           c("24", "#C7FFC7"), c("25", "#8c8c8c"), c("", "white"), c("NA", "white")))
 
 names(mgCST)<-c("mgCST", "color")
 colfunc <- colorRampPalette(c("khaki", "limegreen", "darkslategray1", "mediumblue", "magenta", "red"))
