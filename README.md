@@ -26,14 +26,15 @@ pip install -r requirements.txt
 
 Required R packages are incorporated in the script ```mgCST_classifier_v2.R```
 
+<!---
 # Run the application locally
 
 1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/49650609)
    ```bash
-   # Download the image via the provided link or by running the following:
-   wget https://figshare.com/ndownloader/files/49650609
+  # Download the image via the provided link or by running the following:
+  wget https://figshare.com/ndownloader/files/49650609
 
-   # Unzip the archive
+  # Unzip the archive
    unzip 49650609
    ```
    
@@ -48,6 +49,8 @@ Required R packages are incorporated in the script ```mgCST_classifier_v2.R```
     ```
 
     You can test the classifier through the application using the provided example file: ```VIRGO2_Compiled_example.summary.NR.txt```
+
+-->
 
 ## Notes
 
