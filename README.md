@@ -40,7 +40,7 @@ Required R packages are incorporated in the script ```mgCST_classifier_v2.R```
    
 2. Navigate to the application directory:
     ```bash
-    cd mgCST-classifier-v2
+    cd mgCST-classifier-streamlit
     ```
 
 3. Run the app:
