@@ -21,7 +21,7 @@ The application is run through Streamlit with the following requirements:
 
 # Run the application locally
 
-1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/53284757)
+1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/53285822)
    
 2. Open a terminal and navigate to the application directory
    ```bash
