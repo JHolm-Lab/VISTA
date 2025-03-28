@@ -5,10 +5,10 @@ current_time <- Sys.time()
 print(paste("Start time:", current_time, sep = " "))
 
 ## IMPORT PACKAGES
-if (!require(randomForestSRC, quietly = TRUE)) install.packages("randomForestSRC", repos = "https://cran.us.r-project.org")
-if (!require(gplots, quietly = TRUE, warn.conflicts = FALSE)) install.packages("gplots", quiet = TRUE)
-if (!require(dplyr, quietly = TRUE)) install.packages("dplyr", quiet = TRUE)
-if (!require(data.table, quietly = TRUE)) install.packages("data.table", quiet = TRUE)
+# if (!require(randomForestSRC, quietly = TRUE)) install.packages("randomForestSRC", repos = "https://cran.us.r-project.org")
+# if (!require(gplots, quietly = TRUE, warn.conflicts = FALSE)) install.packages("gplots", quiet = TRUE)
+# if (!require(dplyr, quietly = TRUE)) install.packages("dplyr", quiet = TRUE)
+# if (!require(data.table, quietly = TRUE)) install.packages("data.table", quiet = TRUE)
 
 ### Added parallel processing (mc.cores) + created functions to speed up processing time
 ##### Requires submitting script with a 4th argument, which is the number of cores/threads
@@ -46,6 +46,13 @@ if (today[[1]][3] %in% "") {
 today2 <- paste(day, month, year, sep="")
 print(today2)
 
+print("Current wd")
+print(getwd())
+print(args[1])
+print(args[2])
+print(args[3])
+print(args[4])
+
 #######################################################     READ THE MGSS.CLASSIFIER RDS FILE     #################################################################################
 mgss.classifiers <- readRDS(paste(args[3], "/vog.mgss_classifier.RDS", sep=""))
 if (!exists("mgss.classifiers")) {
@@ -78,6 +85,7 @@ genes <- na.omit(genes)
 
 print("Dimension of the final count table:")
 print(dim(genes))
+print("Normalization ...")
 
 #######################################################     NORMALIZATION OF COUNTS BY 150/geneLength     #########################################################################
 exclude_cols <- c("Gene", "Length", "Taxa", "VOG")      # Specify the columns to exclude
@@ -85,7 +93,7 @@ a <- which(!colnames(genes) %in% exclude_cols)[1]       # Find the index of the 
 
 genes.ngl <- copy(genes)
 genes.ngl[, (a:ncol(genes.ngl)) := lapply(.SD, function(x) x * 150 / Length), .SDcols=a:ncol(genes.ngl)]
-# fwrite(genes.ngl, paste(wd, "/norm_counts_genes_", today2, ".csv", sep=""))
+fwrite(genes.ngl, paste(wd, "/norm_counts_genes_", today2, ".csv", sep=""))
 
 #######################################################     CREATE GENE PRESENCE/ABSENCE TABLE     ################################################################################
 genes.ngl.pa <- copy(genes)
