@@ -41,8 +41,10 @@ The application is run through Streamlit with the following requirements:
    
    ```bash
    Rscript path/to/mgCST_classifier_v2.R path/to/VIRGO2_output.txt.gz path/to/VIRGO2 path/to/mgCST-classifier-master n_cores
-
-   # Example after downloading the image:
+   ```
+   ```
+   # Example after downloading the image
+   
    Rscript mgCST_classifier_v2.R VIRGO2_mgCST_example.txt volume/VIRGO2 volume/mgCST-classifier-master 4
    ```
    Output is written to current directory.
