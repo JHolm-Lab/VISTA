@@ -19,14 +19,6 @@ The application is run through Streamlit with the following requirements:
 
 </div>
 
-Python packages can be installed using:
-```bash
-pip install -r requirements.txt
-```
-
-Required R packages are incorporated in the script ```mgCST_classifier_v2.R```
-
-
 # Run the application locally
 
 1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/50066130)
