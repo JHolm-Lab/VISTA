@@ -33,7 +33,7 @@ The application is run through Streamlit with the following requirements:
     streamlit run 0_Home.py
     ```
 
-    You can test the classifier through the application using the provided example file: ```VIRGO2_mgCST_example.txt.gz```
+    You can test the classifier through the application using the provided [example file](VIRGO2_mgCST_example.txt)
 
 ## Notes
 
