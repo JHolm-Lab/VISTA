@@ -41,7 +41,7 @@ The application is run through Streamlit with the following requirements:
       
    Example:
    ```bash
-   Rscript mgCST_classifier_v2.R VIRGO2_mgCST_example.txt.gz VIRGO2 mgCST-classifier-master 4
+   Rscript mgCST_classifier_v2.R VIRGO2_mgCST_example.txt.gz path/to/VIRGO2 path/to/mgCST-classifier-master 4
    ```
    Output is written to current directory.
 
