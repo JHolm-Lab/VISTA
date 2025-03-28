@@ -21,21 +21,14 @@ The application is run through Streamlit with the following requirements:
 
 # Run the application locally
 
-1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/53283662)
-   ```bash
-   #Download the image via the provided link or by running the following:
-   wget https://figshare.com/ndownloader/files/53283662
-  
-   #Unzip the archive
-   tar -xvzf mgCST-classifier-v2.tar.gz
-   ```
+1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/53284757)
    
-2. Navigate to the application directory:
-    ```bash
-    cd mgCST-classifier-streamlit
+2. Open a terminal and navigate to the application directory
+   ```bash
+    cd path/to/app/directory
     ```
 
-3. Run the app:
+4. Run the app:
     ```bash
     streamlit run 0_Home.py
     ```
