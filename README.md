@@ -21,10 +21,10 @@ The application is run through Streamlit with the following requirements:
 
 # Run the application locally
 
-1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/50066130)
+1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/53283662)
    ```bash
    #Download the image via the provided link or by running the following:
-   wget https://figshare.com/ndownloader/files/50066130
+   wget https://figshare.com/ndownloader/files/53283662
   
    #Unzip the archive
    tar -xvzf mgCST-classifier-v2.tar.gz
