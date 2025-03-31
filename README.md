@@ -5,6 +5,8 @@ This application provides visualizations and tools related to Metagenomic Commun
 It also offers a user-friendly interface to run the classifier on VIRGO2 output.
 
 # Requirements
+
+## Dependencies
 The application is run through Streamlit with the following requirements:
 
 <div align="center">
@@ -25,6 +27,28 @@ pip install streamlit pandas numpy plotly streamlit-pdf-viewer
 ```
 
 The installation of the required R libraries is incorporated into the classifier R script.
+
+
+## Command
+
+The Python script calls the classifier R script using the Rscript command. By default, it uses the Mac/Linux path:
+
+```python
+    command = [
+        "/usr/local/bin/Rscript", # update this path if needed
+        r_script_path,
+        temp_file_path,
+        virgo2_path,
+        mgCST_classifier_master_path,
+        str(num_cores)
+    ]
+```
+
+To ensure the correct path is used, verify your system's Rscript location by running:
+
+```bash
+which Rscript
+```
 
 # Run the application locally
 
