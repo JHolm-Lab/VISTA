@@ -19,6 +19,13 @@ The application is run through Streamlit with the following requirements:
 
 </div>
 
+To install the required Python libraries, run:
+```bash
+pip install streamlit pandas numpy plotly streamlit-pdf-viewer
+```
+
+The installation of the required R libraries is incorporated into the classifier R script.
+
 # Run the application locally
 
 1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/53286029)
