@@ -5,10 +5,10 @@ current_time <- Sys.time()
 print(paste("Start time:", current_time, sep = " "))
 
 ## IMPORT PACKAGES
-# if (!require(randomForestSRC, quietly = TRUE)) install.packages("randomForestSRC", repos = "https://cran.us.r-project.org")
-# if (!require(gplots, quietly = TRUE, warn.conflicts = FALSE)) install.packages("gplots", quiet = TRUE)
-# if (!require(dplyr, quietly = TRUE)) install.packages("dplyr", quiet = TRUE)
-# if (!require(data.table, quietly = TRUE)) install.packages("data.table", quiet = TRUE)
+if (!require(randomForestSRC, quietly = TRUE)) install.packages("randomForestSRC", repos = "https://cran.us.r-project.org")
+if (!require(gplots, quietly = TRUE, warn.conflicts = FALSE)) install.packages("gplots", quiet = TRUE)
+if (!require(dplyr, quietly = TRUE)) install.packages("dplyr", quiet = TRUE)
+if (!require(data.table, quietly = TRUE)) install.packages("data.table", quiet = TRUE)
 
 ### Added parallel processing (mc.cores) + created functions to speed up processing time
 ##### Requires submitting script with a 4th argument, which is the number of cores/threads
