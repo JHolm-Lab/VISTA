@@ -28,7 +28,7 @@ The installation of the required R libraries is incorporated into the classifier
 
 # Run the application locally
 
-1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/53286029)
+1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/53331026)
    
 3. Open a terminal and navigate to the application directory
    ```bash
