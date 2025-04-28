@@ -23,7 +23,7 @@ The application is run through Streamlit with the following requirements:
 
 To install the required Python libraries, run:
 ```bash
-pip install streamlit pandas numpy plotly seaborn streamlit-pdf-viewer
+pip install streamlit pandas numpy plotly seaborn scipy streamlit-pdf-viewer
 ```
 
 The installation of the required R libraries is incorporated into the classifier R script.
