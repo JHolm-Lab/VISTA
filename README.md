@@ -17,7 +17,9 @@ The application is run through Streamlit with the following requirements:
 | pandas                 | gplots             |
 | numpy                  | data.table         |
 | plotly                 | dplyr              |
-| streamlit-pdf-viewer   | parallel           |
+| seaborn                | parallel           |
+| scipy                  |                    |
+| streamlit-pdf-viewer   |                    |
 
 </div>
 
