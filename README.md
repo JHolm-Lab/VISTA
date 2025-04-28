@@ -28,7 +28,7 @@ To install the required Python libraries, run:
 pip install streamlit pandas numpy plotly seaborn scipy streamlit-pdf-viewer
 ```
 
-The installation of the required R libraries is incorporated into the classifier R script.
+The installation of the required R libraries is incorporated into the classifier's R script.
 
 
 ## Command
