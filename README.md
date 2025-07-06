@@ -39,7 +39,7 @@ The Python script calls the classifier R script using the Rscript command. By de
     command = [
         "/usr/local/bin/Rscript", # update this path if needed
         r_script_path,
-        temp_file_path,
+        temp_file_path, ## VIRGO2 output file: /path/to/VIRGO2_output_Compiled.summary.NR.txt
         virgo2_path,
         mgCST_classifier_master_path,
         str(num_cores)
@@ -55,6 +55,10 @@ which Rscript
 # Run the application locally
 
 1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/53331026)
+
+   ```bash
+   wget --content-disposition "https://figshare.com/ndownloader/files/53331026"
+   ```
    
 3. Open a terminal and navigate to the application directory
    ```bash
@@ -73,7 +77,7 @@ which Rscript
 1. The classifier can be run without the application:
    
    ```bash
-   Rscript path/to/mgCST_classifier_v2.R path/to/VIRGO2_output.txt.gz path/to/VIRGO2 path/to/mgCST-classifier-master n_cores
+   Rscript path/to/mgCST_classifier_v2.R /path/to/VIRGO2_output_Compiled.summary.NR.txt path/to/VIRGO2 path/to/mgCST-classifier-master n_cores
    ```
    ```
    # Example after downloading the image
