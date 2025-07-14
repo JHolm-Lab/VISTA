@@ -1,4 +1,4 @@
-# MgCST classifier v2
+# VOG-mgCST classifier v2
 
 This application provides visualizations and tools related to Metagenomic Community State Types v2. 
 
