@@ -1,4 +1,5 @@
-# VOG-mgCST classifier v2
+
+# VISTA (Vaginal Inference of Subspecies and Typing Algorithm)
 
 This application provides visualizations and tools related to Metagenomic Community State Types v2. 
 
