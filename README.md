@@ -57,7 +57,7 @@ which Rscript
 1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/53331026)
 
    ```bash
-   wget --content-disposition "https://figshare.com/ndownloader/files/53331026"
+   curl -L -o vista_app.zip "https://figshare.com/ndownloader/files/53331026"
    ```
    
 3. Open a terminal and navigate to the application directory
