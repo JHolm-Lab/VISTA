@@ -1,7 +1,6 @@
+<img src="assets/VISTA_logo.jpg" alt="VISTA Logo" width="300"/>
 
-# VISTA (Vaginal Inference of Subspecies and Typing Algorithm)
-
-This application provides visualizations and tools related to Metagenomic Community State Types v2. 
+This application provides visualizations and tools related to the assignment of Metagenomic Community State Types to vaginal metagenomes. 
 
 It also offers a user-friendly interface to run the classifier on VIRGO2 output.
 
