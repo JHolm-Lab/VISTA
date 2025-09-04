@@ -1,13 +1,16 @@
 <img src="assets/VISTA_logo.jpg" alt="VISTA Logo" width="300"/>
 
-This application provides visualizations and tools related to the assignment of Metagenomic Community State Types to vaginal metagenomes. 
+# VISTA: Vaginal Metagenome Community State Type Assignment
 
-It also offers a user-friendly interface to run the classifier on VIRGO2 output.
+This application provides visualizations and tools for assigning **Metagenomic Community State Types (mgCSTs)** to vaginal metagenomes. It includes a user-friendly interface for running the classifier on **VIRGO2** output files.
 
-# Requirements
+---
 
-## Dependencies
-The application is run through Streamlit with the following requirements:
+## 🛠 Requirements
+
+### Dependencies
+
+This application runs via **Streamlit** and requires both **Python** and **R** environments:
 
 <div align="center">
 
@@ -23,78 +26,86 @@ The application is run through Streamlit with the following requirements:
 
 </div>
 
-To install the required Python libraries, run:
+To install the required Python libraries:
+
 ```bash
 pip install streamlit pandas numpy plotly seaborn scipy streamlit-pdf-viewer
 ```
 
-The installation of the required R libraries is incorporated into the classifier's R script.
+Required R packages are installed automatically via the classifier's R script.
 
+---
 
-## Command
+## ⚙️ Classifier Command
 
-The Python script calls the classifier R script using the Rscript command. By default, it uses the Mac/Linux path:
+The Python script calls the R classifier using the `Rscript` command. Default path (Mac/Linux):
 
 ```python
-    command = [
-        "/usr/local/bin/Rscript", # update this path if needed
-        r_script_path,
-        temp_file_path, ## VIRGO2 output file: /path/to/VIRGO2_output_Compiled.summary.NR.txt
-        virgo2_path,
-        mgCST_classifier_master_path,
-        str(num_cores)
-    ]
+command = [
+    "/usr/local/bin/Rscript",  # Update this path if needed
+    r_script_path,
+    temp_file_path,            # VIRGO2 output file
+    virgo2_path,
+    mgCST_classifier_master_path,
+    str(num_cores)
+]
 ```
 
-To ensure the correct path is used, verify your system's Rscript location by running:
+To verify your system’s Rscript path:
 
 ```bash
 which Rscript
 ```
 
-# Run the application locally
+---
 
-1. **Download** and **unzip** the [image of the application](https://figshare.com/ndownloader/files/53331026)
+## 🚀 Running VISTA Locally
 
-   ```bash
-   curl -L -o vista_app.zip "https://figshare.com/ndownloader/files/53331026"
-   ```
-   
-3. Open a terminal and navigate to the application directory
-   ```bash
-    cd path/to/app/directory
-    ```
+1. **Download** and **unzip** the [application image](https://figshare.com/ndownloader/files/:
 
-4. Run the app:
-    ```bash
-    streamlit run 0_Home.py
-    ```
+```bash
+cd path/to/app/directory
+```
 
-    You can test the classifier through the application using the provided example file.
-   
-## Notes
+3. Launch the app:
 
-1. The classifier can be run without the application:
-   
-   ```bash
-   Rscript path/to/mgCST_classifier_v2.R /path/to/VIRGO2_output_Compiled.summary.NR.txt path/to/VIRGO2 path/to/mgCST-classifier-master n_cores
-   ```
-   ```
-   # Example after downloading the image
-   
-   Rscript mgCST_classifier_v2.R VIRGO2_mgCST_example.txt volume/VIRGO2 volume/mgCST-classifier-master 4
-   ```
-   Output is written to current directory.
+```bash
+streamlit run 0_Home.py
+```
 
-   Each output file is dated.
+You can test the classifier using the provided example file.
 
-3. Adjust the maximum size of uploaded file (if needed, currently, the limit is set to 30GB):
+---
 
-   a. Access the Streamlit config file (```.streamlit/config.toml```)
+## 🧪 Running the Classifier Without the App
 
-   b. Modify the ```config.toml``` file
-   ```toml
-   [server]
+You can run the classifier directly via R:
 
-    maxUploadSize = 30000   # modify this value if needed
-   ```
+```bash
+Rscript path/to/mgCST_classifier_v2.R /path/to/VIRGO2_output_Compiled.summary.NR.txt path/to/VIRGO2 path/to/mgCST-classifier-master n_cores
+```
+
+**Example:**
+
+```bash
+Rscript mgCST_classifier_v2.R VIRGO2_mgCST_example.txt volume/VIRGO2 volume/mgCST-classifier-master 4
+```
+
+- Output files are saved to the current directory.
+- Each output file is timestamped.
+
+---
+
+## 📁 File Upload Limit
+
+To adjust the maximum upload size (default: 30GB):
+
+1. Open the Streamlit config file: `.streamlit/config.toml`
+
+2. Modify the following line:
+
+```toml
+[server]
+maxUploadSize = 30000  # Change this value as needed
+```
+
