@@ -1,6 +1,6 @@
 <img src="assets/VISTA_logo.jpg" alt="VISTA Logo" width="300"/>
 
-# VISTA: Vaginal Metagenome Community State Type Assignment
+# VISTA: Vaginal Inference of Subspecies and Typing Algorithm
 
 This application provides visualizations and tools for assigning **Metagenomic Community State Types (mgCSTs)** to vaginal metagenomes. It includes a user-friendly interface for running the classifier on **VIRGO2** output files.
 
