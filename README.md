@@ -17,7 +17,7 @@ This application runs via **Streamlit** and requires both **Python** and **R** e
 | Python (v3.8+)         | R (v4.3+)          |
 |------------------------|--------------------|
 | streamlit              | randomForestSRC    |
-| pandas                 | gplots             |
+| pandas                 | pheatmap           |
 | numpy                  | data.table         |
 | plotly                 | dplyr              |
 | seaborn                | parallel           |
@@ -45,9 +45,7 @@ command = [
     "/usr/local/bin/Rscript",  # Update this path if needed
     r_script_path,
     temp_file_path,            # VIRGO2 output file
-    virgo2_path,
-    mgCST_classifier_master_path,
-    str(num_cores)
+    VISTA_path
 ]
 ```
 
@@ -59,53 +57,71 @@ which Rscript
 
 ---
 
-## 🚀 Running VISTA Locally
+To set up the VISTA app and models required for `run_VISTA.R`, follow these steps:
 
-1. **Download** and **unzip** the [application image](https://figshare.com/ndownloader/files/:
+### 1. 📥 Download VISTA Resources
 
-```bash
-cd path/to/app/directory
-```
+Download the bundled archive from Figshare:  
+**🔗 [VISTA_data.tar.gz](https://figshare.com/ndownloader/files/57689476)**  
+This includes:  
+- VISTA Streamlit app  
+- mgSs classification models  
+- mgCST reference centroids  
 
-3. Launch the app:
+### 2. 📦 Move the Archive to Your VISTA Directory
 
-```bash
-streamlit run 0_Home.py
-```
+Place the downloaded file into your cloned VISTA project folder:
 
-You can test the classifier using the provided example file.
+    mv VISTA_data.tar.gz /path/to/VISTA/
+
+### 3. 🔓 Unpack the Archive
+
+Extract the contents of the archive:
+
+    tar -xzvf VISTA_data.tar.gz
 
 ---
 
-## 🧪 Running the Classifier Without the App
+## ⌨️ Classifying mgCSTs with VISTA via Command Line
 
-You can run the classifier directly via R:
-
+Run the mgCST classifier without launching the Streamlit app.
+- The VISTA input file should be a VIRGO2 output summary, provided either as a plain text file or compressed with .gz.
 ```bash
-Rscript path/to/mgCST_classifier_v2.R /path/to/VIRGO2_output_Compiled.summary.NR.txt path/to/VIRGO2 path/to/mgCST-classifier-master n_cores
+# Usage:
+#   Rscript mgCST_classifier_v2.R <VIRGO2_summary> <VISTA_data_dir>
+
+Rscript path/to/mgCST_classifier_v2.R \
+  path/to/VIRGO2_output_Compiled.summary.NR.txt \
+  /path/to/VISTA
+
+Rscript run_VISTA.R \
+  VISTA_example.txt.gz \
+  ~/bin/VISTA
 ```
 
-**Example:**
-
-```bash
-Rscript mgCST_classifier_v2.R VIRGO2_mgCST_example.txt volume/VIRGO2 volume/mgCST-classifier-master 4
-```
-
-- Output files are saved to the current directory.
+- Output files are saved to the current working directory.
 - Each output file is timestamped.
 
 ---
+## 💻 Running the VISTA App
+The VISTA app allows for exploration of VISTA mgCSTs and mgSs and classification of your own data. 
 
-## 📁 File Upload Limit
+Launch the VISTA Streamlit interface by navigating to the app directory and running:
 
-To adjust the maximum upload size (default: 30GB):
+```bash
+cd path/to/VISTA/VISTA_data
+streamlit run 0_Home.py
+```
 
-1. Open the Streamlit config file: `.streamlit/config.toml`
+By default, the app allows uploads up to 30GB. To change this limit:
 
-2. Modify the following line:
-
-```toml
+Open the Streamlit configuration file located at:
+```bash
+.streamlit/config.toml
+```
+Update or add the following setting:
+```bash
 [server]
-maxUploadSize = 30000  # Change this value as needed
+maxUploadSize = 30000  # Set your desired limit in megabytes
 ```
 
