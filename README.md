@@ -84,13 +84,13 @@ Extract the contents of the archive:
 
 ## ⌨️ Classifying mgCSTs with VISTA via Command Line
 
-Run the mgCST classifier without launching the Streamlit app.
+Run VISTA to assign mgCSTS without launching the Streamlit app.
 - The VISTA input file should be a VIRGO2 output summary, provided either as a plain text file or compressed with .gz.
 ```bash
 # Usage:
-#   Rscript mgCST_classifier_v2.R <VIRGO2_summary> <VISTA_data_dir>
+#   Rscript run_VISTA.R <VIRGO2_summary> <VISTA_data_dir>
 
-Rscript path/to/mgCST_classifier_v2.R \
+Rscript path/to/run_VISTA.R \
   path/to/VIRGO2_output_Compiled.summary.NR.txt \
   /path/to/VISTA
 
