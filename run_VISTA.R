@@ -5,6 +5,7 @@ current_time <- Sys.time()
 print(paste("Start time:", current_time, sep = " "))
 
 ## IMPORT PACKAGES
+options(repos = c(CRAN = "https://cloud.r-project.org"))
 if (!require(randomForestSRC, quietly = TRUE)) install.packages("randomForestSRC", repos = "https://cran.us.r-project.org")
 if (!require(pheatmap, quietly = TRUE, warn.conflicts = FALSE)) install.packages("pheatmap", quiet = TRUE)
 if (!require(dplyr, quietly = TRUE)) install.packages("dplyr", quiet = TRUE)
