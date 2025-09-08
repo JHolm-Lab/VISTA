@@ -21,7 +21,7 @@ This application runs via **Streamlit** and requires both **Python** and **R** e
 | numpy                  | data.table         |
 | plotly                 | dplyr              |
 | seaborn                | parallel           |
-| scipy                  |                    |
+| scipy                  | R.utils            |
 | streamlit-pdf-viewer   |                    |
 
 </div>
