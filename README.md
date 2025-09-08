@@ -93,13 +93,10 @@ cd path/to/VISTA/VISTA_data
 streamlit run 0_Home.py
 ```
 
-Streamlit will start a local web server and display two URLs:
-
-Local URL: http://localhost:XXXX
-Network URL: http://XX.XX.XX.XX:XXXX
+Streamlit will start a local web server to explore mgSs and mgCSTs.
 
 
-By default, the app allows uploads up to 20MB. To change this limit:
+To run VISTA in the app: By default, the app allows uploads up to 20MB. To change this limit:
 
 Open the Streamlit configuration file located at:
 ```bash
