@@ -36,39 +36,18 @@ Required R packages are installed automatically via the classifier's R script.
 
 ---
 
-## ⚙️ Classifier Command
-
-The Python script calls the R classifier using the `Rscript` command. Default path (Mac/Linux):
-
-```python
-command = [
-    "/usr/local/bin/Rscript",  # Update this path if needed
-    r_script_path,
-    temp_file_path,            # VIRGO2 output file
-    VISTA_path
-]
-```
-
-To verify your system’s Rscript path:
-
-```bash
-which Rscript
-```
-
----
-
 To set up the VISTA app and models required for `run_VISTA.R`, follow these steps:
 ### 1. 🔧 Clone the VISTA Repository.
 To get started, clone the VISTA repository to your local machine using Git:
 
-    git clone https://github.com/JHolm-Lab/VISTA.git
+    git clone https://github.com/JHolm-Lab/VISTA.git /path/to/destination
 
 This will create a local copy of the VISTA codebase, including the classifier script. Make sure you have Git installed on your system. If not, you can install it from git-scm.com.
 
 ### 2. 📥 Download VISTA Resources
 
 Download the bundled archive from Figshare:  
-**🔗 [VISTA_data.tar.gz](https://figshare.com/ndownloader/files/57763219)**  (https://doi.org/10.6084/m9.figshare.28684934.v7)
+**🔗 [VISTA_data.tar.gz](https://figshare.com/ndownloader/files/57767185)**  (https://doi.org/10.6084/m9.figshare.28684934.v8)
 
 This includes:  
 - VISTA Streamlit app  
@@ -79,15 +58,33 @@ This includes:
 
 Extract the contents of the archive:
 
-    tar -xzvf VISTA_data.tar.gz
+    tar -xzvf VISTA_data.tar.gz /path/to/destination/VISTA/
 
 ### 4. 📦 Move VISTA_data to Your VISTA Directory
 
 Place the downloaded, unarchived directory into your cloned VISTA project folder:
 
-    mv VISTA_data /path/to/VISTA/
+    mv VISTA_data 
 
 ---
+## ⚙️ Classifier Command
+
+The Python script calls the R classifier using the `Rscript` command. Default path (Mac/Linux):
+
+```python
+command = [
+    "/usr/local/bin/Rscript",  # Update this path if needed
+    r_script_path,
+    temp_file_path,            # VIRGO2.py compile output file (genes x sample count table)
+    VISTA_path                 # full path to VISTA repo 
+]
+```
+
+To verify your system’s Rscript path:
+
+```bash
+which Rscript
+```
 
 ## ⌨️ Classifying mgCSTs with VISTA via Command Line
 
