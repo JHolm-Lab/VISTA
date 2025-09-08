@@ -109,7 +109,7 @@ maxUploadSize = 30000  # Set your desired limit in megabytes
 
 ## Citation
 If you use VISTA in your research, please cite:
-> [Author(s)]. VISTA: An Ortholog-Based Framework for Functional Classification of the Vaginal Microbiome. [Journal Name], [Year].
+> [Author(s)]. [Title]. [Journal Name], [Year].
 
 ## Documentation and Resources
 - VIRGO2 gene catalog: [(https://github.com/ravel-lab/VIRGO2)]
