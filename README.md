@@ -2,7 +2,7 @@
 
 # VISTA: Vaginal Inference of Subspecies and Typing Algorithm
 
-This application provides visualizations and tools for assigning **Metagenomic Community State Types (mgCSTs)** to vaginal metagenomes. It includes a user-friendly interface for running the classifier on **[VIRGO2](https://github.com/ravel-lab/VIRGO2)** output files.
+This application provides visualizations and tools for assigning **Metagenomic Community State Types (mgCSTs)** to vaginal metagenomes. It includes a user-friendly interface for running the classifier on **[VIRGO2](https://github.com/ravel-lab/VIRGO2)** compiled output files.
 
 ---
 
@@ -86,7 +86,7 @@ Place the downloaded, unarchived directory into your cloned VISTA project folder
 ## ⌨️ Classifying mgCSTs with VISTA via Command Line
 
 Run VISTA to assign mgCSTS without launching the Streamlit app.
-- The VISTA input file should be a VIRGO2 output summary, provided either as a plain text file or compressed with .gz.
+- The VISTA input file should be a VIRGO2 output file (generated via "VIRGO2.py compile"), provided either as a plain text file or compressed with .gz.
 ```bash
 # Usage:
 #   Rscript run_VISTA.R <VIRGO2_summary> <VISTA_data_dir>
