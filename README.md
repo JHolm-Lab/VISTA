@@ -67,24 +67,6 @@ Place the downloaded, unarchived directory into your cloned VISTA project folder
     mv VISTA_data /path/to/destination/VISTA/
 
 ---
-## ⚙️ Classifier Command
-
-The Python script calls the R classifier using the `Rscript` command. Default path (Mac/Linux):
-
-```python
-command = [
-    "/usr/local/bin/Rscript",  # Update this path if needed
-    r_script_path,
-    temp_file_path,            # VIRGO2.py compile output file (genes x sample count table)
-    VISTA_path                 # full path to VISTA repo 
-]
-```
-
-To verify your system’s Rscript path:
-
-```bash
-which Rscript
-```
 
 ## ⌨️ Classifying mgCSTs with VISTA via Command Line
 
@@ -92,7 +74,7 @@ Run VISTA to assign mgCSTS without launching the Streamlit app.
 - The VISTA input file should be a VIRGO2 output file (generated via "VIRGO2.py compile"), provided either as a plain text file or compressed with .gz.
 ```bash
 # Usage:
-#   Rscript run_VISTA.R <VIRGO2_summary> <VISTA_data_dir>
+#   Rscript run_VISTA.R <VIRGO2_compile_summary> <VISTA_data_dir>
 
 Rscript path/to/run_VISTA.R \
   path/to/VIRGO2_output_Compiled.summary.NR.txt \
@@ -121,6 +103,7 @@ By default, the app allows uploads up to 30GB. To change this limit:
 
 Open the Streamlit configuration file located at:
 ```bash
+cd path/to/VISTA/VISTA_data
 .streamlit/config.toml
 ```
 
