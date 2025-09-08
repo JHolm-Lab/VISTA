@@ -10,6 +10,7 @@ if (!require(randomForestSRC, quietly = TRUE)) install.packages("randomForestSRC
 if (!require(pheatmap, quietly = TRUE, warn.conflicts = FALSE)) install.packages("pheatmap", quiet = TRUE)
 if (!require(dplyr, quietly = TRUE)) install.packages("dplyr", quiet = TRUE)
 if (!require(data.table, quietly = TRUE)) install.packages("data.table", quiet = TRUE)
+if (!require(R.utils, quietly = TRUE)) install.packages("R.utils", quiet = TRUE)
 
 # This script requires approximately 20 GB of RAM to run efficiently.
 
