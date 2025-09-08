@@ -58,8 +58,14 @@ which Rscript
 ---
 
 To set up the VISTA app and models required for `run_VISTA.R`, follow these steps:
+### 1. 🔧 Clone the VISTA Repository.
+To get started, clone the VISTA repository to your local machine using Git:
 
-### 1. 📥 Download VISTA Resources
+    git clone https://github.com/JHolm-Lab/VISTA.git
+
+This will create a local copy of the VISTA codebase, including the classifier script. Make sure you have Git installed on your system. If not, you can install it from git-scm.com.
+
+### 2. 📥 Download VISTA Resources
 
 Download the bundled archive from Figshare:  
 **🔗 [VISTA_data.tar.gz](https://figshare.com/ndownloader/files/57763219)**  (https://doi.org/10.6084/m9.figshare.28684934.v7)
@@ -69,13 +75,13 @@ This includes:
 - mgSs classification models  
 - mgCST reference centroids  
 
-### 2. 🔓 Unpack the Archive
+### 3. 🔓 Unpack the Archive
 
 Extract the contents of the archive:
 
     tar -xzvf VISTA_data.tar.gz
 
-### 3. 📦 Move VISTA_data to Your VISTA Directory
+### 4. 📦 Move VISTA_data to Your VISTA Directory
 
 Place the downloaded, unarchived directory into your cloned VISTA project folder:
 
