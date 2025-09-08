@@ -2,7 +2,7 @@
 
 # VISTA: Vaginal Inference of Subspecies and Typing Algorithm
 
-This application provides visualizations and tools for assigning **Metagenomic Community State Types (mgCSTs)** to vaginal metagenomes. It includes a user-friendly interface for running the classifier on **VIRGO2** output files.
+This application provides visualizations and tools for assigning **Metagenomic Community State Types (mgCSTs)** to vaginal metagenomes. It includes a user-friendly interface for running the classifier on **[VIRGO2](https://github.com/ravel-lab/VIRGO2)** output files.
 
 ---
 
