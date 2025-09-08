@@ -62,24 +62,24 @@ To set up the VISTA app and models required for `run_VISTA.R`, follow these step
 ### 1. 📥 Download VISTA Resources
 
 Download the bundled archive from Figshare:  
-**🔗 [VISTA_data.tar.gz](https://figshare.com/ndownloader/files/57762820)**  (https://doi.org/10.6084/m9.figshare.28684934.v6)
+**🔗 [VISTA_data.tar.gz](https://figshare.com/ndownloader/files/57763219)**  (https://doi.org/10.6084/m9.figshare.28684934.v7)
 
 This includes:  
 - VISTA Streamlit app  
 - mgSs classification models  
 - mgCST reference centroids  
 
-### 2. 📦 Move the Archive to Your VISTA Directory
-
-Place the downloaded file into your cloned VISTA project folder:
-
-    mv VISTA_data.tar.gz /path/to/VISTA/
-
-### 3. 🔓 Unpack the Archive
+### 2. 🔓 Unpack the Archive
 
 Extract the contents of the archive:
 
     tar -xzvf VISTA_data.tar.gz
+
+### 3. 📦 Move VISTA_data to Your VISTA Directory
+
+Place the downloaded, unarchived directory into your cloned VISTA project folder:
+
+    mv VISTA_data /path/to/VISTA/
 
 ---
 
