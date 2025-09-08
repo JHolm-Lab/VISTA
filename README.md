@@ -62,7 +62,7 @@ To set up the VISTA app and models required for `run_VISTA.R`, follow these step
 ### 1. 📥 Download VISTA Resources
 
 Download the bundled archive from Figshare:  
-**🔗 [VISTA_data.tar.gz](https://figshare.com/ndownloader/files/57689476)**  
+**🔗 [VISTA_data.tar.gz](https://figshare.com/ndownloader/files/57762820)**  
 This includes:  
 - VISTA Streamlit app  
 - mgSs classification models  
