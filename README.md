@@ -126,9 +126,24 @@ Open the Streamlit configuration file located at:
 ```bash
 .streamlit/config.toml
 ```
+
 Update or add the following setting:
 ```bash
 [server]
 maxUploadSize = 30000  # Set your desired limit in megabytes
 ```
 
+## Citation
+If you use VISTA in your research, please cite:
+> [Author(s)]. VISTA: An Ortholog-Based Framework for Functional Classification of the Vaginal Microbiome. [Journal Name], [Year].
+
+## Documentation and Resources
+- VIRGO2 gene catalog: [(https://github.com/ravel-lab/VIRGO2)]
+- VISTA publication: [Link if available]
+- Web application: Hosted internally
+
+## License
+This project is licensed under the MIT License.
+
+## Contact
+For questions or contributions, please contact the [JHolm Lab](https://github.com/JHolm-Lab).
