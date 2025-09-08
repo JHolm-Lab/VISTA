@@ -58,13 +58,13 @@ This includes:
 
 Extract the contents of the archive:
 
-    tar -xzvf VISTA_data.tar.gz /path/to/destination/VISTA/
+    tar -xzvf VISTA_data.tar.gz 
 
 ### 4. 📦 Move VISTA_data to Your VISTA Directory
 
 Place the downloaded, unarchived directory into your cloned VISTA project folder:
 
-    mv VISTA_data 
+    mv VISTA_data /path/to/destination/VISTA/
 
 ---
 ## ⚙️ Classifier Command
