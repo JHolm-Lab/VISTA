@@ -36,7 +36,6 @@ Required R packages are installed automatically via the classifier's R script.
 
 ---
 
-To set up the VISTA app and models required for `run_VISTA.R`, follow these steps:
 ### 1. 🔧 Clone the VISTA Repository.
 To get started, clone the VISTA repository to your local machine using Git:
 
@@ -46,9 +45,9 @@ To get started, clone the VISTA repository to your local machine using Git:
 This will create a local copy of the VISTA codebase, including the classifier script. Make sure you have Git installed on your system. If not, you can install it from git-scm.com.
 
 ### 2. 📥 Download VISTA Resources
-
-Download the bundled archive from Figshare:  
-**🔗 [VISTA_data.tar.gz](https://figshare.com/ndownloader/files/57767185)**  (https://doi.org/10.6084/m9.figshare.28684934.v8)
+To set up the VISTA app and models required for `run_VISTA.R`, download the bundled archive from Figshare:  
+**🔗 [VISTA_data.tar.gz](https://figshare.com/ndownloader/files/57767185)**  
+version: doi.org/10.6084/m9.figshare.28684934.v8
 
 This includes:  
 - VISTA Streamlit app  
