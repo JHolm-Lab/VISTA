@@ -40,7 +40,8 @@ To set up the VISTA app and models required for `run_VISTA.R`, follow these step
 ### 1. 🔧 Clone the VISTA Repository.
 To get started, clone the VISTA repository to your local machine using Git:
 
-    git clone https://github.com/JHolm-Lab/VISTA.git /path/to/destination
+    git clone https://github.com/JHolm-Lab/VISTA.git /path/to/destination/VISTA
+    cd /path/to/destination/VISTA
 
 This will create a local copy of the VISTA codebase, including the classifier script. Make sure you have Git installed on your system. If not, you can install it from git-scm.com.
 
@@ -58,14 +59,8 @@ This includes:
 
 Extract the contents of the archive:
 
-    tar -xzvf VISTA_data.tar.gz 
-
-### 4. 📦 Move VISTA_data to Your VISTA Directory
-
-Place the downloaded, unarchived directory into your cloned VISTA project folder:
-
-    mv VISTA_data /path/to/destination/VISTA/
-
+    tar -xzvf /path/to/download_folder/VISTA_data.tar.gz 
+    
 ---
 
 ## ⌨️ Classifying mgCSTs with VISTA via Command Line
@@ -99,7 +94,7 @@ cd path/to/VISTA/VISTA_data
 streamlit run 0_Home.py
 ```
 
-By default, the app allows uploads up to 30GB. To change this limit:
+By default, the app allows uploads up to 20MB. To change this limit:
 
 Open the Streamlit configuration file located at:
 ```bash
