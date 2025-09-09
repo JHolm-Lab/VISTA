@@ -100,8 +100,7 @@ To run VISTA in the app: By default, the app allows uploads up to 20MB. To chang
 
 Open the Streamlit configuration file located at:
 ```bash
-cd path/to/VISTA/VISTA_data
-.streamlit/config.toml
+path/to/VISTA/VISTA_data/.streamlit/config.toml
 ```
 
 Update or add the following setting:
