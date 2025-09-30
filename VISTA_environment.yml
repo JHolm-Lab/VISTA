@@ -1,0 +1,14 @@
+name: VISTA
+channels:
+  - ursky
+  - bioconda
+  - conda-forge
+  - defaults
+  - r
+  - cruizperez
+dependencies:
+  - python=3.9
+  - r-base=4.3
+  - r-essentials
+  - r-r.utils
+prefix: /local/groupshare/ravel/amandawilliams/miniconda3/envs/VISTA
