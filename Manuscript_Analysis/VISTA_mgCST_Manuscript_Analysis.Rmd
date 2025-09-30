@@ -1,0 +1,1299 @@
+---
+title: "VISTA mgCST Manuscript Analysis"
+author: "Amanda Williams"
+date: "2025-09-30"
+output: html_notebook
+---
+
+```{G. SWIDSINSKII 1 (mgCST 21) VS G. SWIDSINSKII 3 (mgCST 22)}
+# Load libraries
+library(devtools) 
+library(magrittr)
+require(readxl)
+library(tidyverse)
+library(dplyr)
+library(data.table)
+library(ggsignif)
+
+
+# Set seed
+set.seed(54321)
+
+# Load files
+vog.key <- read.table("VIRGO2_VOGkey.txt", header = T, row.names = NULL, check.names = FALSE, sep = '\t')
+samples_w_mgCST <- read.csv("../SOURCE_DATA/samples_w_mgCSTs.csv")[,c(1,4)]
+gene.prod.original <- read.table("../../VIRGO2_sharing/6.VIRGO2.geneProduct.txt", sep = "\t", header = TRUE, fill = TRUE, quote = "")
+kegg.original <- read.table("../../VIRGO2_sharing/7.VIRGO2.kegg.txt", sep = "\t", header = TRUE, fill = TRUE)
+samples.clusters <- readRDS("../RDS_files/VOG_analysis_updated/samples.clusters.updated.vog.RDS")
+ngl.gene.counts.list.mgSs.pa.clean <- readRDS("../RDS_files/VOG_analysis_updated/vog.list.mgss.pa.RDS")
+genes.clusters <- readRDS("../RDS_files/VOG_analysis_updated/vog.clusters.RDS")
+mt.TPM <- readRDS("MT_TPM_Normalized.RDS")
+
+### Get VOGs
+species <- c()
+for (i in names(samples.clusters)){
+  if (length(table(samples.clusters[[i]]$sample_cluster)) > 1){
+    species <- c(species, i)
+  }
+}
+
+
+### Get G. swidsinskii VOGs and count table
+gswid <- samples.clusters[["Gardnerella_swidsinkii"]]
+swid.vogs <- genes.clusters[["Gardnerella_swidsinkii"]]
+swid.vog.counts <- ngl.gene.counts.list.mgSs.pa.clean[["Gardnerella_swidsinkii"]]
+
+# Filter for mgSs 1 and 3
+gswid.mgSs <- gswid %>% filter(sample_cluster == "1" | sample_cluster == "3")
+swid.vog.counts.t <- t(swid.vog.counts) %>% 
+                                          as.data.frame()
+swid.vog.counts.t$sampleID <- rownames(swid.vog.counts.t)
+swid.vog.counts.t <- swid.vog.counts.t %>% 
+                                          relocate(sampleID)
+swid.vog.counts.com <- gswid.mgSs %>% 
+                                    left_join(swid.vog.counts.t) %>%
+                                    arrange(sample_cluster)
+
+
+## Filter for VOG cluster 3
+swid.vog.3 <- swid.vogs %>% filter(vog_cluster == "9")
+colnames(swid.vog.3) <- c("VOG", "VOG_Cluster")
+swid.vog.3 <- swid.vog.3 %>% left_join(vog.key)
+
+
+### Get VOGs present in mgSs 1 and 3 + check what is different between groups
+vog.list <- swid.vog.3$VOG
+matched <- intersect(vog.list, colnames(swid.vog.counts.com))
+cols.to.keep <- c(colnames(swid.vog.counts.com)[1:2], matched)
+swid.vog.counts.com <- swid.vog.counts.com[ , cols.to.keep]
+
+# Split into metadata and count data
+meta <- swid.vog.counts.com[ , 1:2]
+vog.counts <- swid.vog.counts.com[ , -(1:2)]
+meta[[2]] <- as.factor(meta[[2]])
+
+# Identify samples in each group
+mgSs1.samps <- meta[[2]] == "1"
+mgSs3.samps <- meta[[2]] == "3"
+
+
+# Calculate proportion of zeros per gene in each group
+zeros.mgSs1 <- colSums(vog.counts[mgSs1.samps, ] == 0, na.rm = TRUE) / sum(mgSs1.samps)
+zeros.mgSs3 <- colSums(vog.counts[mgSs3.samps, ] == 0, na.rm = TRUE) / sum(mgSs3.samps)
+
+# Keep genes where one group has >50% zeros and the other has <50%
+vogs.to.keep <- names(which(
+  (zeros.mgSs1 > 0.5 & zeros.mgSs3 < 0.5) |
+    (zeros.mgSs1 < 0.5 & zeros.mgSs3 > 0.5)
+))
+
+# Filter original data to keep only selected gene columns
+swid.vog.counts.filt <- cbind(meta, vog.counts[ , vogs.to.keep, drop = FALSE])
+
+
+### Get gene functions
+swid.genes.filt <- swid.vog.3 %>% 
+                                filter(VOG %in% vogs.to.keep)
+swid.function.gp <- swid.genes.filt  %>% left_join(gene.prod.original)
+swid.function.kegg <- swid.genes.filt  %>% left_join(kegg.original)
+swid.function.caxzy <- swid.genes.filt  %>% left_join(cazy.original)
+
+```
+
+
+```{G. VAGINALIS 1 (mgCST 18) VS G. VAGINALIS 2}
+# Load libraries
+library(devtools) 
+library(magrittr)
+require(readxl)
+library(tidyverse)
+library(dplyr)
+library(data.table)
+library(reshape2)
+
+
+# Set seed
+set.seed(54321)
+
+# Load files
+vog.key <- read.table("VIRGO2_VOGkey.txt", header = T, row.names = NULL, check.names = FALSE, sep = '\t')
+samples_w_mgCST <- read.csv("../SOURCE_DATA/samples_w_mgCSTs.csv")[ ,c(1,4)]
+gene.prod.original <- read.table("../../VIRGO2_sharing/6.VIRGO2.geneProduct.txt", sep = "\t", header = TRUE, fill = TRUE, quote = "")
+kegg.original <- read.table("../../VIRGO2_sharing/7.VIRGO2.kegg.txt", sep = "\t", header = TRUE, fill = TRUE)
+samples.clusters <- readRDS("../RDS_files/VOG_analysis_updated/samples.clusters.updated.vog.RDS")
+ngl.gene.counts.list.mgSs.pa.clean <- readRDS("../RDS_files/VOG_analysis_updated/vog.list.mgss.pa.RDS")
+genes.clusters <- readRDS("../RDS_files/VOG_analysis_updated/vog.clusters.RDS")
+mt.TPM <- readRDS("MT_TPM_Normalized.RDS")
+master.meta <- read.csv("MT_Master_Meta.csv", header = T, row.names = NULL, check.names = FALSE, sep = ',')
+
+
+### Edit GeneProduct strings
+gene.prod.original$GeneProduct <- gsub(" \\(fragment\\)", "", gene.prod.original$GeneProduct, ignore.case = TRUE)
+
+
+### Get G. vaginalis VOGs and count table
+gvag <- samples.clusters[["Gardnerella_vaginalis"]]
+vag.vogs <- genes.clusters[["Gardnerella_vaginalis"]]
+vag.vog.counts <- ngl.gene.counts.list.mgSs.pa.clean[["Gardnerella_vaginalis"]]
+
+# Filter for mgSs 1 and 2
+gvag.mgSs <- gvag %>% filter(sample_cluster == "1" | sample_cluster == "2")
+vag.vog.counts.t <- t(vag.vog.counts) %>% 
+                                          as.data.frame()
+vag.vog.counts.t$sampleID <- rownames(vag.vog.counts.t)
+vag.vog.counts.t <- vag.vog.counts.t %>% 
+                                        relocate(sampleID)
+vag.vog.counts.com <- gvag.mgSs %>% 
+                                    left_join(vag.vog.counts.t) %>%
+                                    arrange(sample_cluster)
+
+
+### Get VOGs present in mgSs 1 and 2 + check what is different between groups
+colnames(vag.vogs) <- c("VOG", "VOG_Cluster")
+vag.vog.all <- vag.vogs %>% left_join(vog.key)
+
+vog.all.list <- vag.vog.all$VOG
+matched.all <- intersect(vog.all.list, colnames(vag.vog.counts.com))
+cols.to.keep.all <- c(colnames(vag.vog.counts.com)[1:2], matched.all)
+vag.vog.counts.com <- vag.vog.counts.com[ , cols.to.keep.all]
+
+# Split into metadata and count data
+meta.gvag <- vag.vog.counts.com[ , 1:2]
+vog.all.counts <- vag.vog.counts.com[ , -(1:2)]
+meta.gvag[[2]] <- as.factor(meta.gvag[[2]])
+
+# Identify samples in each group
+gvag.mgSs1.samps <- meta.gvag[[2]] == "1"
+gvag.mgSs2.samps <- meta.gvag[[2]] == "2"
+
+## Calculate proportion of zeros per gene in each group
+gvag.zeros.mgSs1 <- colSums(vog.all.counts[gvag.mgSs1.samps, ] == 0, na.rm = TRUE) / sum(gvag.mgSs1.samps)
+gvag.zeros.mgSs2 <- colSums(vog.all.counts[gvag.mgSs2.samps, ] == 0, na.rm = TRUE) / sum(gvag.mgSs2.samps)
+
+gvag.zeros.mgSs1.df <- as.data.frame(gvag.zeros.mgSs1)
+gvag.zeros.mgSs2.df <- as.data.frame(gvag.zeros.mgSs2)
+gvag.zeros.df <- merge(gvag.zeros.mgSs1.df, gvag.zeros.mgSs2.df, by = 0, all.x = TRUE, all.y = FALSE)
+
+## Keep genes where one group has >50% zeros and the other has <25%
+gvag.vogs.to.keep.2 <- names(which(
+  (gvag.zeros.mgSs1 > 0.25 & gvag.zeros.mgSs2 < 0.5)))
+
+gvag.vogs.to.keep.1 <- names(which(
+  (gvag.zeros.mgSs1 < 0.5 & gvag.zeros.mgSs2 > 0.25)))
+
+all.gvag.vogs <- names(which(
+  (gvag.zeros.mgSs1 < 1.0 & gvag.zeros.mgSs2 > 0)))
+
+
+# Filter original data to keep only selected gene columns
+vag.vog.counts.filt.1 <- cbind(meta.gvag, vog.all.counts[ , gvag.vogs.to.keep.1, drop = FALSE])
+vag.vog.counts.filt.2 <- cbind(meta.gvag, vog.all.counts[ , gvag.vogs.to.keep.2, drop = FALSE])
+all.vag.vog.counts <- cbind(meta.gvag, vog.all.counts[ , all.gvag.vogs, drop = FALSE])
+
+
+### Get counts of samples in each mgCST that contain mgSs 1 vs 2 
+vag.vog.counts.filt <- vag.vog.counts.filt.1 %>% 
+                                                left_join(samples_w_mgCST) %>%
+                                                relocate(mgCST, .after = "sampleID")
+
+count.vag <- vag.vog.counts.filt %>%
+                                    group_by(mgCST, sample_cluster) %>%               
+                                    summarise(count = n(), .groups = "drop") %>%
+                                    pivot_wider(names_from = sample_cluster,
+                                                values_from = count,
+                                                values_fill = 0)
+
+### Get gene functions
+vag.genes.filt.1 <- vag.vog.all %>% 
+                                filter(VOG %in% gvag.vogs.to.keep.1)
+vag.function.gp.1 <- vag.genes.filt.1  %>% left_join(gene.prod.original)
+vag.function.kegg.1 <- vag.genes.filt.1  %>% left_join(kegg.original)
+vag.function.1 <- vag.function.gp.1  %>% left_join(vag.function.kegg.1)
+
+vag.genes.filt.2 <- vag.vog.all %>% 
+                                filter(VOG %in% gvag.vogs.to.keep.2)
+vag.function.gp.2 <- vag.genes.filt.2  %>% left_join(gene.prod.original)
+vag.function.kegg.2 <- vag.genes.filt.2  %>% left_join(kegg.original)
+vag.function.2 <- vag.function.gp.2  %>% left_join(vag.function.kegg.2)
+
+
+all.vag.gene.func <- vag.vog.all %>% 
+                                filter(VOG %in% all.gvag.vogs)
+all.vag.function.gp <- all.vag.gene.func  %>% left_join(gene.prod.original)
+all.vag.function.kegg <- all.vag.gene.func  %>% left_join(kegg.original)
+all.vag.function <- all.vag.function.gp  %>% left_join(all.vag.function.kegg)
+
+
+### Fucntion in mgSs1 but not in mgSs2, and vice versa
+only.mgSs1 <- vag.function.1 %>%
+                                  filter(!GeneProduct %in% vag.function.2$GeneProduct) %>%
+                                  select(-c(7:10))
+only.mgSs2 <- vag.function.2 %>%
+                                filter(!GeneProduct %in% vag.function.1$GeneProduct) %>%
+                                select(-c(7:10))
+
+mgSs.fun.diff <- bind_rows(data.frame(GeneProduct = only.mgSs1, Source = "Only in mgSs1"),
+                           data.frame(GeneProduct = only.mgSs2, Source = "Only in mgSs2"))
+
+## Collapse gene IDs
+mgSs.fun.diff.collapsed <- mgSs.fun.diff %>%
+                                            group_by(GeneProduct.VOG,
+                                                     GeneProduct.VOG_Cluster,
+                                                     GeneProduct.Taxonomy,
+                                                     GeneProduct.GeneProduct,
+                                                     GeneProduct.KEGG,
+                                                     Source) %>%
+                                            summarise(GeneProduct.Gene = paste(GeneProduct.Gene, collapse = ", "),
+                                                      .groups = "drop") %>%
+                                            select(GeneProduct.VOG,
+                                                   GeneProduct.VOG_Cluster,
+                                                   GeneProduct.Gene,
+                                                   GeneProduct.Taxonomy,
+                                                   GeneProduct.GeneProduct,
+                                                   GeneProduct.KEGG,
+                                                   Source)
+
+
+## Check for pullulanase
+pullul.genes <- c("MG0684_0111_10", "MG0452_1049_1", "MG2188_0998_1", "MG0080_0097_1", "MG0612_0069_1")
+pullul.vogs <- c("VOG0282860", "VOG0282227", "VOG0283238")
+pullul.zeros.df <- gvag.zeros.df %>% filter(Row.names %in% pullul.vogs)
+
+## Check if these genes are present by another name
+vag.vog.samples <- melt(vag.vog.counts.com)
+vag.vog.samples <- vag.vog.samples %>%
+                                      filter(value != 0) 
+
+vag.vog.samples <- vag.vog.samples[ , -c(1, 4)]
+colnames(vag.vog.samples) <- c("mgSs", "VOG")
+vag.vog.samples <- vag.vog.samples %>% distinct()
+
+vog.function <- vag.vog.all %>% left_join(vog.key)
+vog.function <- vog.function %>% left_join(vag.vog.samples)
+vog.function <- vog.function %>% left_join(gene.prod.original)
+
+```
+
+
+```{L. CRISPATUS L-LD AND D-LD ANALYSIS}
+### KEGG IDs for genes of interest
+# recA == K03553
+# D-lactate dehydrogenase == "K03778,K18347"
+# L-lactate dehydrogenase == K00016
+
+### Gene to remove == CIG02738_0012_8 because it has incorrect KEGG ID
+
+
+### Get only L. cripastus reads
+lc.reads <- mt.TPM %>% filter(Taxa == "Lactobacillus_crispatus")
+
+# Remove gene (see above)
+lc.reads <- lc.reads %>% 
+                        filter(Gene != "CIG02738_0012_8")
+
+### Match KEGG ID to genes for more accurate ID
+kegg <- kegg.original[ , c(1:2)]
+lc.reads <- lc.reads %>% 
+                        left_join(kegg) %>%
+                        relocate(KEGG, .after = Gene)
+
+### Filter for genes of interest
+lc.reads.filt <- lc.reads %>% 
+                            filter(KEGG %in% c("K03553", "K03778,K18347", "K00016"))
+
+vogs <- lc.reads.filt %>% left_join(vog.key) %>% relocate(VOG, .after = Gene)
+
+
+### Get only samples with MT data analyzed and filter for mgCSTs needed
+lc.mgCSTs <- c("1", "3", "5", "18", "20", "22")
+lc.meta <- master.meta %>% filter(mgCST %in% lc.mgCSTs)
+lc.meta.simp <- lc.meta[ , c(4:5)]
+
+lc.samples <- lc.meta$MT
+cols.to.keep <- c(colnames(lc.reads)[2], lc.samples)
+lc.reads.filt <- lc.reads.filt[ , cols.to.keep]
+
+
+### Normalize by single copy gene (recA)
+# Merge genes of the same function
+lc.reads.nr <- lc.reads.filt %>% 
+                              group_by(KEGG) %>% 
+                              summarise_each(funs(sum)) %>%
+                              as.data.frame()
+
+## Remove any sample where the count for K03553 is 0
+keep.cols <- sapply(lc.reads.nr[2, -1], function(x) x != 0)
+lc.reads.nr <- lc.reads.nr[, c(TRUE, keep.cols)]
+
+# Extract the normalization vector (counts for gene K03553)
+norm.vector <- lc.reads.nr[lc.reads.nr[ , 1] == "K03553", -1]
+
+# Divide all counts by the count of K03553 (single copy gene)
+lc.reads.norm <- lc.reads.nr
+lc.reads.norm[ , -1] <- sweep(lc.reads.norm[, -1], 2, as.numeric(norm.vector), FUN = "/")
+lc.reads.norm <- lc.reads.norm[-2 , ]
+
+
+# Join metadata to count table
+lc.reads.t <- lc.reads.norm 
+rownames(lc.reads.t) <- lc.reads.t$KEGG
+lc.reads.t$KEGG <- NULL
+lc.reads.t <- t(lc.reads.t) %>% as.data.frame()
+
+lc.reads.t$MT <- rownames(lc.reads.t)
+lc.reads.t <- lc.reads.t %>% relocate(MT)
+lc.reads.t <- lc.reads.t %>% 
+                            left_join(lc.meta.simp) %>%
+                            relocate(mgCST, .after = "MT")
+
+
+## Format data for plotting
+lc.reads.melt <- melt(lc.reads.t)
+colnames(lc.reads.melt) <- c("MT", "mgCST", "Gene", "Abundance")
+lc.reads.melt$Group <- ifelse(lc.reads.melt$mgCST %in% c("1", "3", "5"), "1, 3, 5",
+                              ifelse(lc.reads.melt$mgCST %in% c("20", "22"), "20, 22",
+                                     "18"))
+lc.reads.melt$Group <- factor(lc.reads.melt$Group, levels = c("1, 3, 5", "18", "20, 22"))
+
+# Rename KEGG IDs to gene name
+lc.reads.melt$Gene <- ifelse(lc.reads.melt$Gene == "K00016", "L-lactate dehydrogenase", "D-lactate dehydrogenase")
+
+## Log-transform data
+l.de.df <- lc.reads.melt
+l.de.df[ , 4] <- log10(l.de.df[ , 4] + 1)
+
+### Plot genes
+Colors <- c("1, 3, 5" = "#FE0308", "18" = "#2C31A0", "20, 22" = "#6B7EC0")
+
+cust.theme <- theme_bw() + theme(text = element_text(size = 11),
+                                 legend.position = "none",
+                                 strip.text.y = element_text(angle = 0),
+                                 strip.text = element_text(size = 11, face = "bold"),
+                                 strip.background = element_blank())
+
+ggplot(l.de.df, aes(x = Group, y = Abundance))  + 
+      geom_boxplot(aes(fill = Group), outlier.shape = NA) + 
+      geom_jitter(color = "black", width = 0.01, size = 0.6, alpha = 0.8) +
+      geom_signif(data = sig.df,
+                            aes(xmin = xmin, xmax = xmax, annotations = annotations, y_position = y_position),
+                            manual = TRUE,
+                            textsize = 3.5) + 
+      scale_fill_manual(values = Colors, name = "VOG-mgCST") +
+      xlab("VOG-mgCST") +
+      ylab("Log10[TPM]") +
+      facet_wrap(~Gene, nrow = 2, scales = "free_y") + 
+      cust.theme +
+      theme(strip.background = element_rect(linewidth = 0.2),
+            line = element_line(linewidth = 0.2),
+            rect = element_rect(linewidth = 0.2))
+
+
+```
+
+```{SIMILARITY BETWEEN mgCST 18, L. CRISPATUS, AND OTHER GARD mgCSTS}
+# Load libraries
+library(devtools) 
+library(magrittr)
+library(tidyverse)
+library(dplyr)
+library(data.table)
+library(MASS)
+library(vegan)
+library(philentropy)
+library(effsize)
+
+## Load files
+samples.mgCSTs <- read.table("samples_w_mgCSTs.csv", header = T, row.names = NULL, check.names = FALSE, sep = ',')
+HMP.immune <- read.table("UMD_immunology_012721.csv", header = T, row.names = NULL, check.names = FALSE, sep = ',')
+stan.immune <- read.table("Stanford_immunology_012721.csv", header = T, row.names = NULL, check.names = FALSE, sep = ',')
+MTMG.map <- read.table("../JBH_explore/MTMG_match.csv", header = T, row.names = NULL, check.names = FALSE, sep = ',')
+most.exp.spp <- readRDS("Figure_2B_df.RDS")
+mean.SDI <- read.table("mgCST_Mean_SDI_All_Species.csv", header = T, row.names = NULL, check.names = FALSE, sep = ',')
+SDI <- read.table("mgCST_SDI_All_Species.csv", header = T, row.names = NULL, check.names = FALSE, sep = ',')
+
+
+### Similarity with immune data ###
+HMP.immune <- HMP.immune %>% 
+                            left_join(MTMG.map, by = c("Sample_ID" = "UID")) 
+
+HMP.immune.mgCST <- HMP.immune %>% 
+                                  left_join(samples.mgCSTs, by = c("MG" = "sampleID")) %>%
+                                  filter(!is.na(mgCST)) %>%
+                                  relocate(mgCST) 
+
+HMP.immune.corr <- HMP.immune.mgCST[ , -c(2:18, 21:26, 28, 30:37)]
+colnames(HMP.immune.corr) <- c("mgCST", "IL1a", "IL1b", "IP10", "MIG")
+
+## Remove extra mgCSTs not needed to analysis/not enough samples
+HMP.immune.corr <- HMP.immune.corr %>%
+                                      group_by(mgCST) %>%
+                                      filter(n() > 4) %>%
+                                      ungroup()
+HMP.immune.corr <- HMP.immune.corr %>% 
+                                      filter(mgCST %in% c(1:6, 18:23))
+
+## Code mgCSTs into groups
+HMP.immune.corr$mgCST <- ifelse(HMP.immune.corr$mgCST %in% 1:6, "Lacto",
+                                ifelse(HMP.immune.corr$mgCST %in% 19:23, "Gard",
+                                       "mgCST18"))
+HMP.immune.corr$mgCST <- factor(HMP.immune.corr$mgCST, levels = c("Lacto", "mgCST18", "Gard"))
+HMP.immune.corr[ , c(2:5)] <- log10(HMP.immune.corr[ , c(2:5)] + 1)
+
+
+## Compute group means
+group.means <- aggregate(cbind(IL1a, IL1b, IP10, MIG) ~ mgCST, data = HMP.immune.corr, mean)
+
+## Compute covariance matrix of cytokines
+cov.matrix <- cov(HMP.immune.corr[ , c("IL1a", "IL1b", "IP10", "MIG")])
+
+## Compute Mahalanobis distances
+dist.18.Lacto <- mahalanobis(as.numeric(group.means[group.means$mgCST == "mgCST18", -1]),
+                             as.numeric(group.means[group.means$mgCST == "Lacto", -1]),
+                             cov.matrix)
+
+dist.18.Gard <- mahalanobis(as.numeric(group.means[group.means$mgCST == "mgCST18", -1]),
+                            as.numeric(group.means[group.means$mgCST == "Gard", -1]),
+                            cov.matrix)
+
+# dist.18.Lacto = 0.03141118 and dist.18.Gard = 0.8377916
+# dist.18.Lacto < dist.18.Gard, so mgCST18 is more similar to mgCST1 than mgCST20
+
+## Check with another method
+basic.cor <- cor(t(group.means[-1]))
+
+## MANOVA tests
+HMP.immune.corr.1 <- subset(HMP.immune.corr, mgCST %in% c("mgCST18", "Lacto"))
+model.l <- manova(as.matrix(HMP.immune.corr.1[, 2:5]) ~ mgCST, data = HMP.immune.corr.1)
+summary(model.l, test = "Pillai")
+
+HMP.immune.corr.2 <- subset(HMP.immune.corr, mgCST %in% c("mgCST18", "Gard"))
+model.g <- manova(as.matrix(HMP.immune.corr.2[, 2:5]) ~ mgCST, data = HMP.immune.corr.2)
+summary(model.g, test = "Pillai")
+
+
+## ANOVA tests
+HMP.immune.corr.1 <- subset(HMP.immune.corr, mgCST %in% c("mgCST18", "Lacto"))
+HMP.immune.corr.2 <- subset(HMP.immune.corr, mgCST %in% c("mgCST18", "Gard"))
+
+# Create ANOVA function
+run.anova <- function(data, immune.marker, group.var = "mgCST") {
+  formula <- as.formula(paste(immune.marker, "~", group.var))
+  
+  # Run ANOVA
+  result <- aov(formula, data = data)
+  
+  # Get summary
+  summary.result <- summary(result)
+  
+  # Return summary table with marker name
+  return(list(Marker = immune.marker,
+              ANOVA = summary.result))
+}
+
+
+# Run ANOVA for each immune marker
+immune.markers <- c("IL1a", "IL1b", "IP10", "MIG")
+
+anova.results.l <- lapply(immune.markers, function(marker) {
+  run.anova(HMP.immune.corr.1, marker)
+})
+
+anova.results.g <- lapply(immune.markers, function(marker) {
+  run.anova(HMP.immune.corr.2, marker)
+})
+
+# Extract p-values from the results
+anova.table.l <- do.call(rbind, lapply(anova.results.l, function(res) {
+  p.value <- res$ANOVA[[1]][["Pr(>F)"]][1]
+  f.value <- res$ANOVA[[1]][["F value"]][1]
+  data.frame(Marker = res$Marker, L_P.Value = p.value, L_F.Value = f.value)
+}))
+
+anova.table.g <- do.call(rbind, lapply(anova.results.g, function(res) {
+  p.value <- res$ANOVA[[1]][["Pr(>F)"]][1]
+  f.value <- res$ANOVA[[1]][["F value"]][1]
+  data.frame(Marker = res$Marker, G_P.Value = p.value, G_F.Value = f.value)
+}))
+
+anova.table <- anova.table.l %>% left_join(anova.table.g)
+
+
+### Similarity with transcription data ###
+
+# Keep necessary columns and mgCSTs
+most.exp.spp <- most.exp.spp[ , -c(2:3, 5:31)]
+most.exp.spp$mgCST <- as.character(most.exp.spp$mgCST) %>% as.numeric()
+most.exp.spp <- most.exp.spp %>% 
+                                filter(mgCST %in% c(1:6, 18:23))
+
+## Code mgCSTs into groups
+most.exp.spp$mgCST <- ifelse(most.exp.spp$mgCST %in% 1:6, "Lacto",
+                              ifelse(most.exp.spp$mgCST %in% 19:23, "Gard",
+                                    "mgCST18"))
+most.exp.spp$mgCST <- factor(most.exp.spp$mgCST, levels = c("Lacto", "mgCST18", "Gard"))
+
+
+## Compute Bray-Curtis dissimilarity matrix
+# Aggregate species data by mgCST group to calculate group-level averages 
+conflicts()
+most.exp.spp <- as.data.frame(most.exp.spp)
+agg.data <- most.exp.spp %>%
+                            group_by(mgCST) %>%
+                            dplyr::summarise(dplyr::across(where(is.numeric), mean, na.rm = TRUE)) %>%
+                            as.data.frame()
+rownames(agg.data) <- agg.data$mgCST
+  
+
+# Compute Bray-Curtis dissimilarity on the means
+bc.dist <- vegdist(agg.data[ , -1], method = "bray")
+
+# Convert BC distance to a matrix for easier access
+bc.matrix <- as.matrix(bc.dist)
+
+# Extract the BC distances between groups
+bc.18.Lacto <- bc.matrix["mgCST18", "Lacto"]
+bc.18.Gard <- bc.matrix["mgCST18", "Gard"]
+bc.Lacto.Gard <- bc.matrix["Lacto", "Gard"]
+
+# bc.18.Lacto < bc.18.Gard, then mgCST18 is more similar to L. crispatus mgCSTs
+# 0.04547403 & 0.04372366, so mgCST18 is distinct from each group
+# bc.Lacto.Gard = 0.08485967, so mgCST18 in between L. crispatus and other Gardnerella mgCSTs (maybe)
+
+
+
+### Similarity with SDI ###
+SDI <- SDI %>% 
+              filter(mgCST %in% c(1:6, 18:23))
+
+## Code mgCSTs into groups
+SDI$mgCST <- ifelse(SDI$mgCST %in% 1:6, "Lacto",
+                 ifelse(SDI$mgCST %in% 19:23, "Gard", "mgCST18"))
+SDI$mgCST <- factor(SDI$mgCST, levels = c("Lacto", "mgCST18", "Gard"))
+
+## Calculate Cohen's d between mgCST18 and L. crispatus/other Gardnerella mgCSTs
+cd.18.Lacto <- cohen.d(SDI$Shannon[SDI$mgCST == "mgCST18"], 
+                       SDI$Shannon[SDI$mgCST == "Lacto"])$estimate
+
+cd.18.Gard <- cohen.d(SDI$Shannon[SDI$mgCST == "mgCST18"], 
+                      SDI$Shannon[SDI$mgCST == "Gard"])$estimate
+
+# cd.18.Lacto = 1.91 indicates a large effect size between the SDI values of mgCST18 and Lacto
+# cd.18.Gard = -1.67 indicates a large effect size between the SDI values of mgCST18 and Gard
+# The negative value means that mgCST18 has a lower SDI compared to Gard.
+
+```
+
+
+```{Total VOGS by VISTA mgCST (Figure 1E)}
+require(reshape2)
+require(data.table)
+require(dplyr)
+require(stringr)
+library(tidyverse)
+library(pheatmap)
+library(gridExtra)
+
+# Set seed
+set.seed(54321)
+
+# VIRGO2 annotation files----
+VOG <- read.table("../../VIRGO2_sharing/VIRGO2_VOGkey.txt", sep="\t", header=TRUE) %>%
+  filter(Taxonomy != "unknown")
+
+
+# Make table----
+ngl.abund.clusters.cast.vog <- readRDS("../RDS_files/VOG_analysis_updated/ngl.abund.clusters.cast.vog.RDS")
+ngl.abund.clusters.cast.vog<-ngl.abund.clusters.cast.vog/rowSums(ngl.abund.clusters.cast.vog)
+ngl.abund.clusters.cast.vog$sampleID<-rownames(ngl.abund.clusters.cast.vog)
+ngl.abund.clusters.cast.vog.m<-reshape2::melt(ngl.abund.clusters.cast.vog, id.vars="sampleID", variable.name="mgSs", value.name="proportion")
+#ngl.abund.clusters.cast.vog.m<-ngl.abund.clusters.cast.vog.m[ngl.abund.clusters.cast.vog.m$proportion > 0, ]
+ngl.abund.clusters.cast.vog.m$species<-ifelse(str_count(ngl.abund.clusters.cast.vog.m$mgSs, "_") > 2, 
+                                              paste(str_split_fixed(ngl.abund.clusters.cast.vog.m$mgSs, "_", n=4)[,1], 
+                                                    str_split_fixed(ngl.abund.clusters.cast.vog.m$mgSs, "_", n=4)[,2], 
+                                                    str_split_fixed(ngl.abund.clusters.cast.vog.m$mgSs, "_", n=4)[,3], sep="_"), 
+                                              ifelse(str_count(ngl.abund.clusters.cast.vog.m$mgSs, "_") > 1,
+                                                     paste(str_split_fixed(ngl.abund.clusters.cast.vog.m$mgSs, "_", n=4)[,1], 
+                                                           str_split_fixed(ngl.abund.clusters.cast.vog.m$mgSs, "_", n=4)[,2], sep="_"),
+                                                     as.character(ngl.abund.clusters.cast.vog.m$mgSs)))
+
+samples_w_mgCST <- read.csv("../SOURCE_DATA/samples_w_mgCSTs.csv")[,c(1,4)]
+total.samples<-samples_w_mgCST %>% group_by(mgCST) %>% summarise(tSamples=length(unique(sampleID)))
+samples_w_mgCST<-merge(samples_w_mgCST, ngl.abund.clusters.cast.vog.m, all=TRUE)
+samples_w_mgCST$mgCST <- factor(samples_w_mgCST$mgCST, levels=1:25)
+
+mgCST.vog.table <- readRDS("../RDS_files/VOG_analysis_updated/mgCST.vog.table.RDS")
+filtered_list <- lapply(mgCST.vog.table, function(df) {
+  melted_df <- reshape2::melt(cbind(VOG=rownames(df), df), id.vars = "VOG", variable.name = "sampleID", value.name = "pa")
+  melted_df <- subset(melted_df, pa != 0)
+  melted_df$mgCST <- samples_w_mgCST$mgCST[match(melted_df$sampleID, samples_w_mgCST$sampleID)]
+  melted_df$Taxonomy <- VOG$Taxonomy[match(melted_df$VOG, VOG$VOG)]
+  return(melted_df)
+})
+
+mgCST.vog.pa.df<-as.data.frame(rbindlist(filtered_list))
+mgCST.vog.pa.df$mgCST <- samples_w_mgCST$mgCST[match(mgCST.vog.pa.df$sampleID, samples_w_mgCST$sampleID)]
+
+
+### Count total number of VOGs in each sample by mgCST
+# Create an empty list to collect data frames
+vog.sum.list <- list()
+
+# Loop over the list of matrices
+for (name in names(mgCST.vog.table)) {
+  mat <- mgCST.vog.table[[name]]
+  
+  # Sum VOGs for each sample (column)
+  total.vogs <- colSums(mat, na.rm = TRUE)
+  
+  # Create a data frame
+  df <- data.frame(
+    MG = names(total.vogs),
+    Total_VOGs = as.numeric(total.vogs),
+    mgCST = name,
+    stringsAsFactors = FALSE
+  )
+  
+  # Add to list
+  vog.sum.list[[name]] <- df
+}
+
+# Combine all into one data frame
+vog.sum.df <- do.call(rbind, vog.sum.list)
+rownames(vog.sum.df) <- NULL
+
+# Set mgCST as factor
+vog.sum.df$mgCST <- gsub("mgCST_", "", vog.sum.df$mgCST)
+vog.sum.df$mgCST <- factor(vog.sum.df$mgCST, levels = as.character(1:25))
+
+## Log-transform for better plot
+#vog.sum.df$Total_VOGs <- log10(vog.sum.df$Total_VOGs)
+
+
+### Plot total VOGs in each mgCST
+data.list <- readRDS("../RDS_files/VOG_analysis_updated/mgCST_heatmap_plot_input.RDS")
+mgcst.cols <- data.list$mgcst.cols
+
+## Set plot characteristics
+cust.theme <- theme_bw() + theme(text = element_text(size = 11),
+                                 legend.position = "none")
+
+# Plot
+A <- ggplot(vog.sum.df, aes(x = mgCST, y = Total_VOGs))  + 
+            geom_boxplot(aes(fill = mgCST), outlier.shape = NA) + 
+            geom_jitter(color = "black", width = 0.03, size = 0.6, alpha = 0.8) +
+            scale_fill_manual(values = mgcst.cols, name = "VOG-mgCST") +
+            xlab("VOG-mgCST") +
+            ylab("Log10(Number of VOGs)") +
+            cust.theme
+A
+```
+
+
+```{r Figure 2 Plots}
+# Load libraries
+library(devtools) 
+library(magrittr)
+require(readxl)
+library(tidyverse)
+library(dplyr)
+library(data.table)
+library(reshape2)
+library(ggplot2)
+library(ggpubr)
+library(ggsignif)
+library(ggforce)
+library(pheatmap)
+library(cowplot)
+
+
+# Set seed
+set.seed(54321)
+
+
+# Load files
+to.plot.org <- readRDS("Figure_2A_DF.RDS")
+sdi <- read.table(" mgCST_SDI_All_Species.csv", header = T, row.names = NULL, check.names = FALSE, sep = ',')
+color.key <- readRDS("Figure_2A_Colors.RDS")
+heatmap.data <- readRDS("Figure_2B_Heatmap.RDS")
+melt.cyt.filt <- readRDS("Figure_2C.RDS")
+supp.data <- readRDS("Figure_2_Supp.RDS")
+
+### Figure 2A
+to.plot.name <- to.plot.org %>%
+                              mutate(species_toPlot = ifelse(mgSs == "Gardnerella_vaginalis_B",
+                                                             "Gardnerella vaginalis B", species_toPlot))
+
+## Aggregate all Others into 1 row for each sample
+to.plot <- to.plot.name[ , -c(2, 4, 7:9)]
+
+to.plot <- to.plot %>%
+                          group_by(across(-proportion)) %>%  
+                          summarize(proportion = sum(proportion), .groups = "drop") %>% 
+                          ungroup()
+
+
+## Plot each mgCST
+make.mgcst.plot <- function(to.plot, color.key, g.mgcst, Gard.species, cutoff.value) {
+  
+  # Filter to just the mgCST of interest
+  mgCST <- to.plot %>%
+                      filter(mgCST == g.mgcst)
+  
+  # Correct duplicates
+  mgCST <- mgCST %>%
+    group_by(sampleID) %>%
+    do({
+      df <- .
+      missing <- 1 - sum(df$proportion, na.rm = TRUE)
+      if (any(df$species_toPlot == Gard.species)) {
+        df$proportion[df$species_toPlot == Gard.species] <- 
+          df$proportion[df$species_toPlot == Gard.species] + missing
+      } else {
+        df <- bind_rows(df, df[1, ] %>%
+                          mutate(species_toPlot = Gard.species,
+                                 proportion = missing))
+      }
+      df
+    }) %>%
+    ungroup()
+  
+  # Filter out samples where the Gard.species proportion < cutoff.value
+  mgCST <- mgCST %>%
+    group_by(sampleID) %>%
+    filter(!(any(species_toPlot == Gard.species & proportion < cutoff.value))) %>%
+    ungroup()
+  
+  # Filter for dominant species to order samples
+  to.plot.filtered <- mgCST %>%
+                              filter(species_toPlot == Gard.species) %>%
+                              arrange(desc(proportion)) %>%
+                              mutate(Order = factor(1:nrow(.), levels = 1:nrow(.))) %>%
+                              select(sampleID, Order)
+  
+  # Order sampleIDs within each mgCST by SDI
+  mgCST <- mgCST %>%
+                  left_join(to.plot.filtered, by = "sampleID") %>%
+                  group_by(Order) %>%
+                  arrange(desc(proportion), .by_group = TRUE) %>%
+                  mutate(species_toPlot = factor(species_toPlot,
+                                                 levels = unique(species_toPlot))) %>%
+                  ungroup()
+  
+  # Order taxa colors by proportion
+  taxa.Colors <- setNames(color.key$Color, color.key$Taxa)
+  taxa.Colors <- taxa.Colors[unique(mgCST$species_toPlot)]
+  
+  # Custom theme
+  cust.theme <- theme_bw() + theme(strip.text.y = element_text(angle = 0),
+                                   strip.text = element_text(size = 11, face = "bold"),
+                                   strip.background = element_blank())
+  
+  # Make plot
+  p <- ggplot(mgCST, aes(x = Order, y = proportion, fill = species_toPlot,
+                         alpha = ifelse(grepl("Gardnerella", species_toPlot), 1, 0.9))) +
+              geom_bar(stat = "identity", position = "fill") +
+              scale_fill_manual(values = taxa.Colors, name = "") +
+              scale_alpha_identity() +
+              ggforce::facet_col(facets = vars(Title),  
+                                 scales = "free_x",  
+                                 space = "free") +
+              xlab("") +
+              ylab("Proportion of taxa") +
+              guides(fill = guide_legend(byrow = TRUE, override.aes = list(size = 2), nrow = 15)) +
+              cust.theme +
+              theme(axis.text.x = element_blank(),
+                    text = element_text(size = 10),
+                    title = ggtext::element_markdown(colour = "black"),
+                    legend.text = element_text(face = "italic", size = 8),
+                    legend.position = "bottom",
+                    strip.background = element_rect(linewidth = 0.2),
+                    axis.ticks.x = element_blank(),
+                    line = element_line(linewidth = 0.2),
+                    legend.key.size = unit(0.01, "cm"),
+                    rect = element_rect(linewidth = 0.2),
+                    panel.grid = element_blank())
+  
+  return(p)
+}
+
+
+make.mgcst.plot <- function(to.plot, color.key, g.mgcst, Gard.species, cutoff.value) {
+  
+  # Filter to just the mgCST of interest
+  mgCST <- to.plot %>%
+    filter(mgCST == g.mgcst)
+  
+  # Correct duplicates
+  mgCST <- mgCST %>%
+    group_by(sampleID) %>%
+    do({
+      df <- .
+      missing <- 1 - sum(df$proportion, na.rm = TRUE)
+      if (any(df$species_toPlot == Gard.species)) {
+        df$proportion[df$species_toPlot == Gard.species] <- 
+          df$proportion[df$species_toPlot == Gard.species] + missing
+      } else {
+        df <- bind_rows(df, df[1, ] %>%
+                          mutate(species_toPlot = Gard.species,
+                                 proportion = missing))
+      }
+      df
+    }) %>%
+    ungroup()
+  
+  # Filter out samples where Gard proportion < cutoff.value
+  mgCST <- mgCST %>%
+    group_by(sampleID) %>%
+    filter(!(any(species_toPlot == Gard.species & proportion < cutoff.value))) %>%
+    ungroup()
+  
+  # ----- HIERARCHICAL CLUSTERING -----
+  # Pivot to wide matrix
+  wide <- mgCST %>%
+    select(sampleID, species_toPlot, proportion) %>%
+    tidyr::pivot_wider(names_from = species_toPlot,
+                       values_from = proportion,
+                       values_fill = 0) %>%
+    as.data.frame()
+  
+  row.names(wide) <- wide$sampleID
+  wide <- wide[, -1, drop = FALSE]
+  
+  if (nrow(wide) > 1) {  # clustering only works if >1 sample
+    d <- vegan::vegdist(wide, method = "bray")
+    hc <- hclust(d, method = "ward.D2")
+    sample.order <- data.frame(sampleID = row.names(wide)[hc$order],
+                               Order = factor(row.names(wide)[hc$order],
+                                              levels = row.names(wide)[hc$order]))
+  } else {
+    # if only one sample, keep as is
+    sample.order <- data.frame(sampleID = row.names(wide),
+                               Order = factor(row.names(wide)))
+  }
+  
+  mgCST <- mgCST %>%
+    left_join(sample.order, by = "sampleID") %>%
+    mutate(species_toPlot = factor(species_toPlot,
+                                   levels = unique(to.plot$species_toPlot)))
+  
+  # Order taxa colors globally
+  taxa.Colors <- setNames(color.key$Color, color.key$Taxa)
+  taxa.Colors <- taxa.Colors[levels(mgCST$species_toPlot)]
+  
+  # Custom theme
+  cust.theme <- theme_bw() + theme(strip.text.y = element_text(angle = 0),
+                                   strip.text = element_text(size = 11, face = "bold"),
+                                   strip.background = element_blank())
+  
+  # Make plot
+  p <- ggplot(mgCST, aes(x = Order, y = proportion, fill = species_toPlot,
+                         alpha = ifelse(grepl("Gardnerella", species_toPlot), 1, 0.9))) +
+    geom_bar(stat = "identity", position = "fill") +
+    scale_fill_manual(values = taxa.Colors, name = "") +
+    scale_alpha_identity() +
+    ggforce::facet_col(facets = vars(Title),
+                       scales = "free_x",
+                       space = "free") +
+    xlab("") + ylab("Proportion of taxa") +
+    guides(fill = guide_legend(byrow = TRUE, override.aes = list(size = 2), nrow = 15)) +
+    cust.theme +
+    theme(axis.text.x = element_blank(),
+          text = element_text(size = 10),
+          title = ggtext::element_markdown(colour = "black"),
+          legend.text = element_text(face = "italic", size = 8),
+          legend.position = "bottom",
+          strip.background = element_rect(linewidth = 0.2),
+          axis.ticks.x = element_blank(),
+          line = element_line(linewidth = 0.2),
+          legend.key.size = unit(0.01, "cm"),
+          rect = element_rect(linewidth = 0.2),
+          panel.grid = element_blank())
+  
+  return(p)
+}
+
+mgcst.18 <- make.mgcst.plot(to.plot, color.key, g.mgcst = "18", Gard.species = "Gardnerella vaginalis", cutoff.value = 0.28)
+mgcst.19 <- make.mgcst.plot(to.plot, color.key, g.mgcst = "19", Gard.species = "Gardnerella vaginalis C", cutoff.value = 0.18)
+mgcst.20 <- make.mgcst.plot(to.plot, color.key, g.mgcst = "20", Gard.species = "Gardnerella vaginalis H", cutoff.value = 0.10)
+mgcst.21 <- make.mgcst.plot(to.plot, color.key, g.mgcst = "21", Gard.species = "Gardnerella swidsinkii 1", cutoff.value = 0.15)
+mgcst.22 <- make.mgcst.plot(to.plot, color.key, g.mgcst = "22", Gard.species = "Gardnerella swidsinkii", cutoff.value = 0.10)
+mgcst.23 <- make.mgcst.plot(to.plot, color.key, g.mgcst = "23", Gard.species = "Gardnerella piotii", cutoff.value = 0.28)
+
+## Arrange with shared legend
+plots <- list(mgcst.18, mgcst.19, mgcst.20, mgcst.21, mgcst.22, mgcst.23)
+plots <- lapply(plots, function(p) p + ylab(NULL))
+
+combined <- ggarrange(plotlist = plots,
+                      ncol = 1, nrow = 6,
+                      common.legend = TRUE,
+                      legend = "bottom")
+
+final.plot <- annotate_figure(combined, 
+                              left = text_grob("Relative Abundance", 
+                                               rot = 90, size = 10, hjust = -0.35))
+
+
+### Figure 2B
+mt.FPKM.spp <- heatmap.data[["mt.FPKM.spp"]]
+master.meta <- heatmap.data[["master.meta"]]
+samples <-  heatmap.data[["samples"]]
+
+
+## Get samples used for MT and format MG data (merge mgSs)
+ngl.abund.clusters.cast.vog <- ngl.abund.clusters.cast.vog/rowSums(ngl.abund.clusters.cast.vog)
+ngl.abund.clusters.cast.vog$sampleID <- rownames(ngl.abund.clusters.cast.vog)
+
+# Merge mgCST info with abundance data
+ngl.abund.mgCST <- samples_w_mgCST %>%
+                                      inner_join(ngl.abund.clusters.cast.vog, by = "sampleID")
+ngl.abund.mgCST <- MTMG.map %>% left_join(ngl.abund.mgCST, by = c("MG" = "sampleID"))
+ngl.abund.mgCST <- ngl.abund.mgCST[ngl.abund.mgCST$MT %in% samples, ]
+
+ngl.abund.mgCST <- ngl.abund.mgCST %>%
+                                      pivot_longer(cols = 5:1038, names_to = "species", values_to = "count") %>%
+                                      mutate(species = sub("_[0-9]{1,2}$", "", species)) %>%
+                                      group_by(across(1:4), species) %>%
+                                      summarise(count = sum(count, na.rm = TRUE), .groups = "drop") %>%
+                                      pivot_wider(names_from = species, values_from = count)
+
+colnames(ngl.abund.mgCST) <- gsub("_", " ", colnames(ngl.abund.mgCST))
+
+## Replace expression counts with 0 if not present in metagenomic data
+species <- rownames(mt.TPM.spp)
+matched <- intersect(species, colnames(ngl.abund.mgCST))
+cols.to.keep <- c(colnames(ngl.abund.mgCST)[1:4], matched)
+abund.filt <- ngl.abund.mgCST[ , cols.to.keep]
+
+abund.filt.simp <- abund.filt[ , -c(2:4)]
+
+# Loop through each row (i.e., species) in abund.filt.simp
+mt.TPM.filt <- mt.TPM.spp
+
+for (i in 2:ncol(abund.filt.simp)) {  
+  species.name <- colnames(abund.filt.simp)[i]
+  
+  # For samples where that species has a 0 count
+  zero.samples <- abund.filt.simp$MT[abund.filt.simp[[species.name]] == 0]
+  
+  # Set those to 0 in most.exp (if they exist)
+  common.samples <- intersect(zero.samples, colnames(mt.TPM.filt))
+  if (length(common.samples) > 0 && species.name %in% rownames(mt.TPM.filt)) {
+    mt.TPM.filt[species.name, common.samples] <- 0
+  }
+}
+
+
+## Filter for most expressed species
+most.exp <- mt.TPM.filt %>%
+                            mutate(Sum = rowSums(., na.rm = TRUE)) %>%
+                            arrange(desc(Sum)) %>%
+                            head(90) %>%
+                            dplyr::select(-Sum)
+
+
+# Remove species without change
+to.remove <- c("Bulleidia spNov1", "Campylobacter hominis", "Veillonella atypica",
+               "Facklamia hominis", "Varibaculum cambriense", "Enterococcus faecalis",
+               "Lawsonella clevelandensis", "Bacteroides fragilis",
+               "Limosilactobacillus portuensis", "Fusobacterium polymorphum",
+               "Nakaseomyces glabratus", "Pichia kudriavzevii",
+               "Haemophilus parainfluenzae", "Streptococcus mitis",
+               "Staphylococcus epidermidis", "Streptococcus agalactiae",
+               "Corynebacterium amycolatum", "Ezakiella massiliensis",
+               "Corynebacterium sp001767255", "Gemella haemolysans",
+               "Gemella asaccharolytica", "Prevotella jejuni",
+               "Fusobacterium animalis", "Prevotella colorans",
+               "Prevotella seregens", "Peptoniphilus sp000478985",
+               "Ezakiella coagulans", "Peptostreptococcus anaerobius",
+               "Nanoperiomorbus sp004136275", "Porphyromonas sp001808555")
+
+most.exp <- most.exp[!(rownames(most.exp) %in% to.remove) , ] 
+rownames(most.exp)[rownames(most.exp) == "UBA629 sp005465875"] <- "Ca. Lacnocurva vaginae"
+
+# Join exp mat to master.meta to get mgCSTs
+most.exp.spp <- master.meta %>%
+                                inner_join(t(most.exp) %>% as.data.frame() %>% 
+                                             mutate(MT = rownames(.)), by = "MT") %>%
+                                arrange(mgCST)
+
+## Remove extra mgCSTs not needed to analysis/not enough samples
+most.exp.spp <- most.exp.spp %>%
+                                group_by(mgCST) %>%
+                                filter(n() > 4) %>%
+                                ungroup()
+most.exp.spp$mgCST <- as.character(most.exp.spp$mgCST)
+most.exp.spp$mgCST <- as.numeric(most.exp.spp$mgCST)
+most.exp.spp <- most.exp.spp %>% 
+                      filter(!(mgCST %in% c(8:17, 24:25)))
+most.exp.spp$mgCST <- factor(most.exp.spp$mgCST, levels = c(1:25))
+
+# Create column annotations and set order of samples
+col.annot <- most.exp.spp %>%
+                              ungroup() %>%
+                              select(MT, mgCST) %>%
+                              arrange(mgCST) %>%
+                              as.data.frame()
+rownames(col.annot) <- col.annot$MT
+col.annot$MT <- NULL
+
+# Update most.exp to match the order of columns in col.annot
+most.exp <- most.exp[ , rownames(col.annot)]
+
+# Compute row clustering using Ward's linkage
+row.dist <- dist(as.matrix(most.exp), method = "manhattan")
+row.clust <- hclust(row.dist, method = "ward.D")
+
+## Set plot characteristics
+colfunc <- colorRampPalette(c("khaki", "limegreen", "darkslategray1", "mediumblue", "magenta", "red"))
+
+mgCST.Colors <- c("1" = "#FE0308", "3" = "#F07084", "5" = "#F0BCCC",
+                  "18" = "#2C31A0", "20" = "#444DAC", "22" = "#6B7EC0")
+
+# Spp names
+t.most.exp <- t(most.exp) %>% as.data.frame()
+t.most.exp$MT <- rownames(t.most.exp)
+
+italic_row_labels <- lapply(names(t.most.exp), function(label) {
+  if(grepl("^f ", label)){
+    return(label)
+  }
+  if(grepl("^o ", label)){
+    return(label)
+  }
+  if(grepl("^v ", label)){
+    return(label)
+  }
+  if(grepl("^c ", label)){
+    return(label)
+  }
+  if(grepl("^p ", label)){
+    return(label)
+  }
+  if(grepl("Other", label)){
+    return(label)
+  }
+  else{
+    return(bquote(italic(.(label))))
+  }
+})
+
+
+## Set column gaps for each mgCST
+mgCST.groups <- as.numeric(factor(replace(col.annot$mgCST)))
+col.gaps <- which(diff(mgCST.groups) != 0)
+
+# Create a new matrix with thin spacer columns
+most.exp.spaced <- most.exp
+gap.cols <- col.gaps  # Indices where gaps should appear
+for (gap in rev(gap.cols)) {
+  most.exp.spaced <- cbind(most.exp.spaced[, 1:gap], 
+                           rep(NA, nrow(most.exp.spaced)),  # Spacer column
+                           most.exp.spaced[ , (gap + 1):ncol(most.exp.spaced)])
+}
+
+# Plot the modified heatmap
+heatmap <- pheatmap(as.matrix(most.exp.spaced),
+                     color = colfunc(50),
+                     cluster_rows = row.clust,
+                     cluster_cols = FALSE,
+                     show_colnames = FALSE,
+                     show_rownames = TRUE,
+                     labels_row = as.expression(italic_row_labels),
+                     annotation_legend = TRUE,
+                     fontsize = 10,
+                     annotation_col = col.annot,
+                     annotation_colors = list(mgCST = mgCST.Colors),
+                     fontsize_row = 8,
+                     angle_col = 0,
+                     cellwidth = 3.5,
+                     cellheight = 7.6,
+                     border_color = NA,
+                     silent = TRUE  # Capture as grob
+)$gtable
+
+
+### Figure 2C
+keep <- c("1", "3", "5", "18", "20", "22")
+lact <- c("1", "3", "5")
+gard <- c("20", "22")
+melt.cyt.filt <- melt.cyt[(melt.cyt$mgCST %in% keep) , ] 
+melt.cyt.filt <- melt.cyt.filt %>% rename(` = 1)
+melt.cyt.filt$Group <- NA
+melt.cyt.filt$Group <- ifelse(melt.cyt.filt$mgCST %in% c("1", "3", "5"), "1, 3, 5",
+                                ifelse(melt.cyt.filt$mgCST %in% c("20", "22"), "20, 22",
+                                       "18"))
+melt.cyt.filt$Group <- factor(melt.cyt.filt$Group, levels = c("1, 3, 5", "18", "20, 22"))
+
+sig.df <- data.frame(Immune_Marker = c("IL-1α", "IL-1α", "IL-1β", "IL-1β", "IP-10", "IP-10", "MIG", "MIG"),
+                     xmin = c(1.1, 2.1, 1.1, 2.1, 1.1, 2.1, 1.1, 2.1),  
+                     xmax = c(1.8, 2.8, 1.8, 2.8, 1.8, 2.8, 1.8, 2.8),
+                     y_position = c(3, 3.1, 2.2, 2.5, 2.6, 3.2, 3.4, 3.3), 
+                     annotations = c("p = 0.1", "p = 0.005", "p = 0.9", "p = 0.003", "p = 0.9", "p = 0.009", 
+                                     "p = 0.2", "p = 0.02"))
+
+## Set plot characteristics
+cust.theme <- theme_bw() + theme(text = element_text(size = 11),
+                                 legend.position = "none",
+                                 strip.text.y = element_text(angle = 0),
+                                 strip.text = element_text(size = 11, face = "bold"),
+                                 strip.background = element_blank())
+
+labels <- c("IL-1α" = "IL-1*alpha", "IL-1β" = "IL-1*beta", 
+            "IP-10" = "IP-10", "MIG" = "MIG")
+
+imm.Colors <- c("1, 3, 5" = "#FE0308", "18" = "#2C31A0", "20, 22" = "#6B7EC0")
+
+# Plot
+C <- ggplot(melt.cyt.filt, aes(x = Group, y = Concentration))  + 
+            geom_boxplot(aes(fill = Group), outlier.shape = NA) + 
+            geom_jitter(color = "black", width = 0.01, size = 0.6, alpha = 0.8) +
+            geom_signif(data = sig.df,
+                        aes(xmin = xmin, xmax = xmax, annotations = annotations, y_position = y_position),
+                        manual = TRUE,
+                        textsize = 3.5) + 
+            scale_fill_manual(values = imm.Colors, name = "mgCST") +
+            xlab("mgCST") +
+            ylab("Concentration (pg/mL)") +
+            facet_wrap(~Immune_Marker, labeller = as_labeller(labels, default = label_parsed),
+                       nrow = 2, scales = "free_y") + 
+            cust.theme +
+            theme(strip.background = element_rect(linewidth = 0.2),
+                  line = element_line(linewidth = 0.2),
+                  rect = element_rect(linewidth = 0.2))
+C
+
+
+
+## Combine
+fig.2 <- ggdraw() +
+                  draw_plot(final.plot, x = 0, y = 0, width = .45, height = 1) +
+                  draw_plot(heatmap, x = 0.46, y = 0.35, width = 0.54, height = 0.67) +
+                  draw_plot(C, x = 0.46, y = 0, width = 0.48, height = 0.368) +
+                  draw_plot_label(label = c("A", "B", "C"), size = 18,
+                                  x = c(0, 0.46, 0.465), y = c(1, 1, 0.368)) +
+                  draw_text("Total gene expression (log10)", x = 0.85, y = 0.39, size = 10, fontface = "bold") + 
+                  theme(plot.background = element_rect(fill = "white", color = NA),
+                        panel.background = element_rect(fill = "white", color = NA),
+                        panel.grid.major = element_blank(),
+                        panel.grid.minor = element_blank(),
+                        plot.margin = margin(0, 0, 0, 0)) 
+fig.2
+
+ggsave("Figure_2_test.pdf", plot = fig.2, 
+       width = 16, height = 12.5, units = "in", 
+       dpi = 600, bg = "white")
+
+```
+
+
+```{Supplemental Plots}
+##### VOG Clusters (Figure S4)
+gard.plot <- to.plot[ , c(18:23)]
+
+# Set plot characteristics
+labels.italic <- parse(text = paste0("italic('", rownames(gard.plot), "')"))
+
+pdf("Gardnerella_VOG_Cluster_Prev_by_mgCST_Heatmap.pdf", height = 12, width = 12)
+pheatmap(gard.plot, color = colorRampPalette(c("antiquewhite", "limegreen", "darkslategray1", "mediumblue", "magenta", "red"))(100), 
+         clustering_method = "ward.D2", 
+         cluster_cols = F, 
+         fontsize = 10, 
+         angle_col = 0, 
+         cellwidth = 40,  
+         cellheight = 5.5,
+         fontsize_col = 10, 
+         fontsize_row = 6,
+         border_color = NA,
+         labels_row = labels.italic)
+dev.off()
+
+##### Plot total microbial gene expression (Figure S5)
+mt.TPM <- expm1(mt.TPM.filt)
+
+t.mt.TPM.spp <- t(mt.TPM) %>% as.data.frame()
+t.mt.TPM.spp <- t.mt.TPM.spp %>%
+                                mutate(Sum = rowSums(., na.rm = TRUE)) %>%
+                                relocate(Sum)
+
+t.mt.TPM.spp <- master.meta %>%
+                                inner_join(t.mt.TPM.spp %>% 
+                                             mutate(MT = rownames(.)), by = "MT") %>%
+                                filter(mgCST %in% keep) %>%
+                                arrange(mgCST) %>%
+                                rename(`VOG-mgCST` = 4) %>%
+                                rename(Total_microbial_expression = 32)
+t.mt.TPM.spp <- t.mt.TPM.spp[ , c(1, 4, 32)]
+
+t.mt.TPM.spp[ , 3] <- log10(t.mt.TPM.spp[ , 3])
+
+
+mgCST.Colors <- c("1" = "#FE0308", "2" = "#F54C5E", "3" = "#F07084", "4" = "#EC94A5", "5" = "#F0BCCC",
+                  "6" = "#F6D3DA", "7" = "#86C61A", "8" = "#B4DB29", "9" = "#F68A11", "10" = "#FF981C",
+                  "11" = "#FFA435", "12" = "#FAE727", "13" = "#FBEA3F", "14" = "#FBED58", "15" = "#E1C775",
+                  "16" = "#589682", "17" = "#6BA290", "18" = "#2C31A0", "19" = "#3C44A8", "20" = "#444DAC",
+                  "21" = "#676EBC", "22" = "#6B7EC0", "23" = "#829CCD", "24" = "#C7FFC7", "25" = "#8c8c8c")
+
+supp.theme <- theme_bw() + theme(text = element_text(size = 12),
+                                 legend.position = "right")
+
+ggplot(t.mt.TPM.spp, aes(x = `VOG-mgCST`, y = Total_microbial_expression)) + 
+  geom_boxplot(aes(fill = `VOG-mgCST`), outlier.shape = NA) + 
+  geom_jitter(color = "black", width = 0.01, size = 0.6, alpha = 0.8) + 
+  scale_fill_manual(values = mgCST.Colors, name = "VOG-mgCST") + 
+  xlab("VOG-mgCST") + 
+  ylab("Total microbial gene expression (TPM)") + 
+  supp.theme 
+
+
+
+##### PRJNA797778 Immune Plots (Figure S6)
+stan.melt.filt <- supp.data[[2]]
+stan.melt.filt <- stan.melt.filt %>% 
+                                    filter(mgCST %in% keep) %>%
+                                      rename(`VOG-mgCST` = 1)
+stan.melt.filt$Group <- NA
+stan.melt.filt$Group <- ifelse(stan.melt.filt$`VOG-mgCST` %in% c("1", "3", "5"), "1, 3, 5",
+                                ifelse(stan.melt.filt$`VOG-mgCST` %in% c("20", "22"), "20, 22",
+                                       "18"))
+stan.melt.filt$Group <- factor(stan.melt.filt$Group, levels = c("1, 3, 5", "18", "20, 22"))
+
+## Set plot characteristics
+imm.Colors <- c("1, 3, 5" = "#FE0308", "18" = "#2C31A0", "20, 22" = "#6B7EC0")
+
+supp.theme <- theme_bw() + theme(text = element_text(size = 11),
+                                 legend.position = "right",
+                                 strip.text.y = element_text(angle = 0),
+                                 strip.text = element_text(size = 11, face = "bold"),
+                                 strip.background = element_blank())
+
+labels <- c("IL-1α" = "IL-1*alpha", "IL-1β" = "IL-1*beta", 
+            "IP-10" = "IP-10", "MIG" = "MIG")
+
+stan.sig <- data.frame(Immune_Marker = c("IL-1α", "IL-1α", "IL-1β", "IL-1β", "IP-10", "IP-10", "MIG", "MIG"),
+                     xmin = c(1.1, 2.1, 1.1, 2.1, 1.1, 2.1, 1.1, 2.1),  
+                     xmax = c(1.8, 2.8, 1.8, 2.8, 1.8, 2.8, 1.8, 2.8),
+                     y_position = c(3, 3.1, 2.2, 2.5, 2.6, 2.6, 3.9, 3.3), 
+                     annotations = c("p = 0.18", "p = 0.03", "p = 0.006", "p = 0.3", "p = 0.08", "p = 0.006", 
+                                     "p = 0.12", "p = 0.02"))
+
+## Plot
+ggplot(stan.melt.filt, aes(x = Group, y = Concentration)) + 
+    geom_boxplot(aes(fill = Group), outlier.shape = NA) + 
+    geom_jitter(color = "black", width = 0.01, size = 0.6, alpha = 0.8) + 
+    geom_signif(data = stan.sig,
+                        aes(xmin = xmin, xmax = xmax, annotations = annotations, y_position = y_position),
+                        manual = TRUE, textsize = 3.5) + 
+    scale_fill_manual(values = imm.Colors, name = "VOG-mgCST") + 
+    xlab("VOG-mgCST") + 
+    ylab("Concentration (pg/mL)") + 
+    ggtitle("BioProject PRJNA797778 ") + 
+    facet_wrap(~Immune_Marker, labeller = as_labeller(labels, default = label_parsed),
+               nrow = 2, scales = "free_y") + 
+    supp.theme + 
+    theme(strip.background = element_rect(linewidth = 0.2), 
+          line = element_line(linewidth = 0.2), 
+          rect = element_rect(linewidth = 0.2))
+
+
+```
+
