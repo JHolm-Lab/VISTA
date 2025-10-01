@@ -108,6 +108,28 @@ Update or add the following setting:
 [server]
 maxUploadSize = 30000  # Set your desired limit in megabytes
 ```
+## 📊 Output
+
+VISTA generates six output files:
+
+1. **`norm_counts_genes_DATE.csv`**  
+   Normalized gene counts (by read length and gene length).
+
+2. **`mgCST_heatmap_DATE.pdf`**  
+   Heatmap of samples and mgSs, annotated with assigned mgCSTs.
+
+3. **`mgCSTs_DATE.csv`**  
+   Sample assignments: includes `sampleID`, `mgCST`, and YC-theta similarity index.
+
+4. **`relabund_w_mgCSTs_DATE.csv`**  
+   Relative abundances of mgSs per sample. Final 26 columns show YC-theta scores for each mgCST and the assigned mgCST.
+
+5. **`norm_counts_mgSs_mgCST_DATE.csv`**  
+   Normalized mgSs counts (summed by mgSs after read/gene length normalization).
+
+6. **`norm_counts_taxa_DATE.csv`**  
+   Normalized taxon counts (summed by VIRGO2 taxon after read/gene length normalization).
+
 
 ## Citation
 If you use VISTA in your research, please cite:
