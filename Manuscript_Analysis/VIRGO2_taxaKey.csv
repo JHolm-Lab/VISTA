@@ -1,0 +1,50 @@
+﻿Taxa,Color,Text
+Aerococcus_christensenii,#616161,A. christensenii
+Berryella_sp001552935,#ff00d9,B. sp001552935
+Bifidobacterium_breve,#c1ffc1,B. breve
+Cutibacterium_acnes,#4c693a,C. acnes
+Dialister_sp001553355,#045c47,D. sp001553355
+Fannyhessea_vaginae,#0000cd,F. vaginae
+Fannyhessea_vaginae,#2C31A0,F. vaginae
+Gardnerella,#666666,Gardnerella
+Gardnerella_leopoldii,#66C2A5,G. leopoldii
+Gardnerella_piotii,#FC8D62,G. piotii
+Gardnerella_sp003585735,#8DA0CB,G. sp003585735
+Gardnerella_sp003585845,#E78AC3,G. sp003585845
+Gardnerella_spNov1,#A6D854,G. spNov1
+Gardnerella_spNov2,#FFD92F,G. spNov2
+Gardnerella_swidsinkii,#1e3602,G. swidsinkii
+Gardnerella_swidsinkii_1,#66A61E,G. swidsinkii_1
+Gardnerella_vaginalis,#E6AB02,G. vaginalis 
+Gardnerella_vaginalis_A,#E5C494,G. vaginalis A
+Gardnerella_vaginalis_C,#B3B3B3,G. vaginalis C
+Gardnerella_vaginalis_D,#1B9E77,G. vaginalis D
+Gardnerella_vaginalis_E,#D95F02,G. vaginalis E
+Gardnerella_vaginalis_F,#7570B3,G. vaginalis F
+Gardnerella_vaginalis_H,#E7298A,G. vaginalis H
+KA00274_sp902373515,#3bb16f,A. indicium
+Lactobacillus_crispatus,#ff0000,L. crispatus
+Lactobacillus_gasseri,#CCFF66,L. gasseri
+Lactobacillus_iners,#ff8c00,L. iners
+Lactobacillus_jensenii,#333333,L. jensenii
+Lactobacillus_mulieris,#a16060,L. mulieris
+Lactobacillus_paragasseri,#0d4018,L. paragasseri
+Limosilactobacillus_portuensis,#cf36b5,L. portuensis
+Megasphaera_lornae,#008B45,M. lornae
+Mobiluncus_mulieris,#f08080,M. mulieris
+Nanoperiomorbus_sp004136275,#613b1a,N. sp004136275
+Other,#8c8c8c,Other
+Prevotella,#7d7d7d,Prevotella
+Prevotella_amnii,#ac8fc7,P. amnii
+Prevotella_bivia,#c997cc,P. bivia
+Prevotella_sp000758925,#6c6e45,P. sp000758925
+Prevotella_spNov1,#684a6b,P. spNov1
+Prevotella_spNov2,#684a6b,P. spNov2
+Prevotella_spNov3,#684a6b,P. spNov3
+Prevotella_timonensis,#f8fca9,P. timonensis
+Sneathia_vaginalis,#6963ff,S. vaginalis
+Streptococcus_agalactiae,#c43db0,S. agalactiae
+Streptococcus_anginosus,#ffbaf8,S. anginosus
+Streptococcus_mitis,#c771ba,S. mitis
+Trichomonas_vaginalis,#0077ff,T. vaginalis
+UBA629_sp005465875,#6e0f00,Ca. L. vaginae
