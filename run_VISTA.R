@@ -157,8 +157,8 @@ cat("Normalizing counts by gene length ...\n")
 counts.mgss <- genes.ngl[, !names(genes.ngl) %in% c("Gene", "Length", "Cat", "VOG"), with=FALSE]
 counts.mgss <- counts.mgss[Taxa != ""]
 counts.mgss <- counts.mgss[, lapply(.SD, sum), by=Taxa]
-counts.mgss <- transpose(counts.mgss, keep.names="Sample")
 old.names <- colnames(counts.mgss)
+counts.mgss <- data.table::transpose(counts.mgss, keep.names="Sample")
 setnames(counts.mgss, old=old.names, new=as.character(counts.mgss[1]))
 setnames(counts.mgss, old = names(counts.mgss)[1], new = "Sample")
 counts.mgss <- counts.mgss[-1]
@@ -185,19 +185,19 @@ cat("Classifying mgSs ...")
 
 #######################################################     CLASSIFY MGSS     #####################################################################################################
 counts.mgss.ngl <- copy(counts.mgss)
-genes.ngl <- vog.ngl
-genes.ngl.pa <- vog.ngl.pa
+rm(genes.ngl)
+rm(genes.ngl.pa)
 
 run_classifier <- function(taxon) {
   tryCatch({
     print(taxon)
     
-    a <- which(!colnames(genes.ngl.pa) %in% exclude_cols)[1]
+    a <- which(!colnames(vog.ngl.pa) %in% exclude_cols)[1]
     
-    table <- as.data.frame(t(genes.ngl.pa[genes.ngl.pa[["Taxa"]] %in% taxon, a:ncol(genes.ngl.pa)]))
-    names(table) <- genes.ngl.pa[genes.ngl.pa[["Taxa"]] %in% taxon, ]$VOG
+    table <- as.data.frame(t(vog.ngl.pa[vog.ngl.pa[["Taxa"]] %in% taxon, a:ncol(vog.ngl.pa)]))
+    names(table) <- vog.ngl.pa[vog.ngl.pa[["Taxa"]] %in% taxon, ]$VOG
     
-    ngl.sum <- rowSums(as.data.frame(t(genes.ngl[genes.ngl[["Taxa"]] %in% taxon, a:ncol(genes.ngl)])))
+    ngl.sum <- rowSums(as.data.frame(t(vog.ngl[vog.ngl[["Taxa"]] %in% taxon, a:ncol(vog.ngl)])))
     
     names(counts.mgss.ngl)[names(counts.mgss.ngl) %in% taxon] <- paste(taxon, 0, sep="_")
     samples.for.0 <- rownames(table)[rowSums(table) < 500]
@@ -267,7 +267,8 @@ cat("Completed processing", length(results.1), " taxa. \nCombining results")
 counts.mgss.ngl.1 <- do.call(cbind, results.1)
 
 #######################################################     TRANSFER ALL NON MGSS TAXON COUNTS TO NGL     ##################################################################
-non_mgss_taxa <- names(counts.mgss)[!names(counts.mgss) %in% names(mgss.classifiers)]
+#### How do we include the species that HAVE classifiers, but not enough genes present to
+non_mgss_taxa <- names(counts.mgss)[!names(counts.mgss) %in% names(mgss.classifiers)] 
 results.2 <- lapply(non_mgss_taxa, function(taxon) {
   tryCatch({
     # Initialize a local data.table to store results
@@ -275,16 +276,6 @@ results.2 <- lapply(non_mgss_taxa, function(taxon) {
     local_counts <- as.data.frame(local_counts[[taxon]])
     rownames(local_counts) <- rownames(counts.mgss.ngl)
     names(local_counts) <- taxon
-    
-    a <- which(!colnames(vog.ngl) %in% exclude_cols)[1]
-    ngl.sum <- rowSums(transpose(vog.ngl[Taxa == taxon, .SD, .SDcols = a:ncol(vog.ngl)]))
-    
-    a <- which(!colnames(vog.ngl.pa) %in% exclude_cols)[1]
-    table <- as.data.frame(t(vog.ngl.pa[vog.ngl.pa[["Taxa"]] %in% taxon, a:ncol(vog.ngl.pa)]))
-    
-    for (sample in rownames(table)) {
-      local_counts[sample, taxon] <- as.numeric(ngl.sum[sample])
-    }
     
     return(local_counts)
     
