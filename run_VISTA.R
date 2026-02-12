@@ -159,8 +159,8 @@ counts.mgss <- counts.mgss[Taxa != ""]
 counts.mgss <- counts.mgss[, lapply(.SD, sum), by=Taxa]
 old.names <- colnames(counts.mgss)
 counts.mgss <- data.table::transpose(counts.mgss, keep.names="Sample")
-setnames(counts.mgss, old=old.names, new=as.character(counts.mgss[1]))
-setnames(counts.mgss, old = names(counts.mgss)[1], new = "Sample")
+names(counts.mgss) <- c(as.character(counts.mgss[1]))
+names(counts.mgss)[1] <- "Sample"
 counts.mgss <- counts.mgss[-1]
 counts.mgss[is.na(counts.mgss)] <- 0
 counts.mgss[, (2:ncol(counts.mgss)) := lapply(.SD, as.numeric), .SDcols = 2:ncol(counts.mgss)]
