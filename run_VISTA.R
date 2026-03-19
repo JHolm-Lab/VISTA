@@ -58,12 +58,13 @@ if (!exists("mgss.classifiers")) {
 
 ## READ IN REFERENCE CENTROIDS
 cat("Reading in VISTA mgCST reference centroids\n")
-reference_centroids <- as.data.frame(fread(paste(args[2], "/VISTA_data/volume/VISTA_files/vog_mgCST_centroids_25Oct2024.csv", sep="")))
+reference_centroids <- as.data.frame(fread(paste(args[2], "/VISTA_data/volume/VISTA_files/vog_mgCST_centroids_26Feb2026.csv", sep="")))
 rownames(reference_centroids) <- reference_centroids$mgCST
 reference_centroids$mgCST <- NULL
+reference_centroids$V1 <- NULL
 
 mgCST.centroids <- as.data.frame(reference_centroids[, 2:ncol(reference_centroids)])
-rownames(mgCST.centroids) <- reference_centroids$mgCST
+# rownames(mgCST.centroids) <- reference_centroids$mgCST
 
 #######################################################     READ THE VIRGO2 COMPILED OUTPUT FILE     ##############################################################################
 file_path <- file.path(args[1])
@@ -80,9 +81,24 @@ if (!file.exists(file_path)) {
 counts.genes <- fread(file_path, fill=TRUE)
 names(counts.genes)[1] <- "Gene"
 
-## Added sample info to print for user upfront 20May2025
-cat(paste0("From ", ncol(counts.genes)-1, " samples, ", sum(colSums(counts.genes[, -1]) > 1), " had > 1 read.\nRead distribution:\n"))
-print(summary(colSums(counts.genes[, -1])))
+# Handle Gardnerella_swidsinskii potential typo
+if ("Taxa" %in% names(counts.genes)) {
+  if ("Gardnerella_swidsinkii" %in% unique(counts.genes$Taxa)){
+    counts.genes$Taxa <- gsub("Gardnerella_swidsinkii", "Gardnerella_swidsinskii",counts.genes$Taxa)
+  }
+}
+
+# Remove columns if they exist
+samples.info <- counts.genes %>%
+  select(-any_of(c("Gene", "Length", "Taxa", "Cat", "KEGG", "VOG")))
+
+# Calculate sums per sample
+sample_sums <- colSums(samples.info)
+
+# Print summary
+cat(paste0("From ", ncol(samples.info), " samples, ", sum(sample_sums > 1), 
+           " had > 1 read.\nRead distribution:\n"))
+print(summary(sample_sums))
 
 #######################################################     READ THE VIRGO2 ANNOTATION FILES     ##################################################################################
 # Read in VIRGO2 Gene length table
@@ -136,11 +152,14 @@ cat("Data and libraries importation : OK\n")
 #######################################################     MERGE ANNOTATION FILES     ############################################################################################
 genes <- merge(gene.length, taxon.tbl[, .(Gene, Taxa)], by='Gene', all.x=FALSE, all.y=FALSE)
 genes <- merge(genes, vog.tbl[, .(Gene, VOG)], by='Gene', all.x=FALSE, all.y=FALSE)
-genes <- merge(genes, counts.genes, by='Gene', all.x=FALSE, all.y=FALSE)
+# genes <- merge(genes, counts.genes, by='Gene', all.x=FALSE, all.y=FALSE)
+merge_cols <- c("Gene", "Length", "Taxa")
+merge_cols <- intersect(merge_cols, colnames(counts.genes))
+genes <- merge(genes, counts.genes, by = merge_cols, all = FALSE)# Avoid Taxa.x / Taxa.y etc...
 genes <- na.omit(genes)
 
 #######################################################     NORMALIZATION OF COUNTS BY 150/geneLength     #########################################################################
-exclude_cols <- c("Gene", "Length", "Taxa", "VOG")      # Specify the columns to exclude
+exclude_cols <- c("Gene", "Length", "Taxa", "Cat", "VOG")      # Specify the columns to exclude
 a <- which(!colnames(genes) %in% exclude_cols)[1]       # Find the index of the first column that is not in the exclude list
 
 genes.ngl <- copy(genes)
@@ -249,7 +268,6 @@ run_classifier <- function(taxon) {
 # Process taxa in parallel and collect results
 taxa <- names(counts.mgss)[names(counts.mgss) %in% names(mgss.classifiers)]
 #results.1 <- mclapply(taxa, run_classifier, mc.cores = num_cores) ## mclapply seemed to slow grid processing -- altered with below loop
-library(parallel)
 
 cat("Processing", length(taxa), " taxa. \nCombining results")
 results.1 <- list()
@@ -359,7 +377,7 @@ run_yue_distance <- function(i) {
 }
 
 
-i <- 1:25
+i <- setdiff(1:25, c(14, 15))
 
 # Use mclapply for parallel processing
 #results.yue.ditance <- mclapply(i, run_yue_distance, mc.cores = num_cores)
@@ -377,7 +395,10 @@ relabund.yue.distance <- as.data.frame(t(do.call(rbind, lapply(results.yue.ditan
 
 # Rename the columns to reflect the mgCST names
 rownames(relabund.yue.distance) <- rownames(relabund)
-colnames(relabund.yue.distance) <- paste("mgCST", 1:length(results.yue.ditance), sep = " ")
+
+# Change mgCST labelling
+# colnames(relabund.yue.distance) <- paste("mgCST", 1:length(results.yue.ditance), sep = " ")
+colnames(relabund.yue.distance) <- paste("mgCST", i, sep = " ")
 
 m<-n+1
 relabund <- cbind(relabund, relabund.yue.distance)
@@ -387,14 +408,14 @@ relabund[["mgCST"]]<-colnames(relabund[,m:which(colnames(relabund) %in% "mgCST 2
 write.csv(relabund, paste(wd, "/relabund_w_mgCSTs_", today2, ".csv", sep=""), row.names = TRUE, quote=F)
 write.csv(cbind(mgCST=relabund["mgCST"], max_YC_theta=apply(relabund[(ncol(relabund)-1):(ncol(relabund)-25)], 1, max)), paste(wd, "/mgCSTs_", today2, ".csv", sep=""), row.names = TRUE, quote=F)
 
-
 ## PLOT HEATMAP
 cat("Making heatmap\n")
+
 mgCST<-as.data.frame(rbind(c("1", "#FE0308"), c("2", "#F54C5E"), c("3", "#F07084"), c("4", "#EC94A5"),c("5", "#F0BCCC"),c("6", "#F6D3DA"),
                            c("7", "#86C61A"), c("8", "#B4DB29"), 
                            c("9", "#F68A11"), c("10", "#FF981C"),c("11", "#FFA435"),
-                           c("12", "#FAE727"),c("13", "#FBEA3F"), c("14", "#FBED58"),
-                           c("15", "#E1C775"),
+                           c("12", "#FAE727"),c("13", "#FBEA3F"),
+                          #  c("14", "#FBED58"),c("15", "#E1C775"),
                            c("16", "#589682"),c("17", "#6BA290"),
                            c("18", "#2C31A0"),c("19", "#3C44A8"),c("20", "#444DAC"),c("21", "#676EBC"),c("22", "#6B7EC0"),c("23", "#829CCD"),
                            c("24", "#C7FFC7"), c("25", "#8c8c8c"), c("", "white"), c("NA", "white")))
@@ -409,15 +430,25 @@ relabund.mgCST[["color"]]<-mgCST[match(relabund.mgCST[["mgCST"]], mgCST$mgCST), 
 names(relabund.mgCST)<-gsub("_", " ", names(relabund.mgCST))
 
 # Prepare matrix and annotations
-mat <- t(as.matrix(relabund.mgCST[, 1:50]))
+# mat <- t(as.matrix(relabund.mgCST[, 1:50]))
 annotation_col <- data.frame(mgCST = relabund.mgCST[["mgCST"]])
 rownames(annotation_col) <- rownames(relabund.mgCST)
 annotation_colors <- list(mgCST = setNames(mgCST$color[mgCST$mgCST %in% annotation_col$mgCST], mgCST$mgCST[mgCST$mgCST %in% annotation_col$mgCST]))
 
+mat <- relabund.mgCST[, 1:(ncol(relabund.mgCST) - 2)] # to remove last 2 columns : mgCST and color
+# Top taxa
+taxa.to.plot <- names(sort(colSums(mat), decreasing = TRUE))[1:50]
+taxa.to.plot <- setdiff(taxa.to.plot, "MultiGenera")
+# Other taxa
+other.taxa <- setdiff(colnames(mat), taxa.to.plot)
+# Build plotting dataframe
+df.to.plot <- mat[, taxa.to.plot, drop = FALSE]
+df.to.plot$Other <- rowSums(mat[, other.taxa, drop = FALSE], na.rm = TRUE)
+
 # Save to PDF
 pdf(paste0(wd, "/mgCST_heatmap_", today2, ".pdf"), width = 7, height = 10)
 pheatmap(
-  mat,
+  as.matrix(t(df.to.plot)),
   cluster_rows = FALSE,
   cluster_cols = FALSE,
   color = colfunc(100),
@@ -436,4 +467,3 @@ print(paste("mgCST_heatmap_", today2, ".csv has been saved", sep=""))
 
 current_time <- Sys.time()
 print(paste("End time:", current_time, sep = " "))
-
