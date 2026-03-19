@@ -46,8 +46,9 @@ This will create a local copy of the VISTA codebase, including the classifier sc
 
 ### 2. 📥 Download VISTA Resources
 To set up the VISTA app and models required for `run_VISTA.R`, download the bundled archive from Figshare:  
-**🔗 [VISTA_data.tar.gz](https://figshare.com/ndownloader/files/57807853)**  
-version: doi.org/10.6084/m9.figshare.28684934.v9
+**🔗 [VISTA_data.tar.gz](https://figshare.com/ndownloader/files/62956279)**  <!-- 57807853-->
+
+version: doi.org/10.6084/m9.figshare.28684934.v10
 
 This includes:  
 - VISTA Streamlit app  
