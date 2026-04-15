@@ -134,7 +134,8 @@ VISTA generates six output files:
 
 ## Citation
 If you use VISTA in your research, please cite:
-> [Author(s)]. [Title]. [Journal Name], [Year].
+> Williams A, Maros A, France MT, Ravel J, Holm JB. 2026. Not all vaginal microbiomes are equal: functional context shapes immune landscapes. mBio 17:e03645-25.
+https://doi.org/10.1128/mbio.03645-25
 
 ## Documentation and Resources
 - VIRGO2 gene catalog: [(https://github.com/ravel-lab/VIRGO2)]
