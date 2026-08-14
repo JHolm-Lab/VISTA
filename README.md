@@ -15,33 +15,16 @@ VISTA provides both:
 
 ## What does VISTA do?
 
-VISTA does **not** process raw sequencing reads directly.
-VIRGO2 is a comprehensive vaginal microbiome gene catalog and annotation framework.
+VISTA does **not** process raw sequencing reads directly. It relies on VIRGO2, a comprehensive vaginal microbiome gene catalog and annotation framework.
+
 VISTA uses VIRGO2-generated gene abundance profiles as input and performs:
 
 1. Metagenomic subspecies (mgSs) assignment
 2. Metagenomic community state type (mgCST) assignment
 
 ### Workflow
-
-```text
-FASTQ files
-    ↓
-VIRGO2 mapping
-    ↓
-VIRGO2.py compile
-    ↓
-VIRGO2_Compiled.summary.NR.txt
-    ↓
-VISTA
-    ↓
-• mgSs abundance matrix
-• mgCST assignments
-• mgCST heatmap
-```
 <img src="assets/Fig1_New.tif" alt="VISTA workflow" width="600"/>
 
-*Read the paper here:* [https://journals.asm.org/doi/10.1128/mbio.03645-25]
 ---
 
 # Software Information
@@ -55,8 +38,8 @@ VISTA
 - Python
 
 **Operating Systems**
-- Linux
-- macOS
+- Linux and macOS tested.
+- Windows not formally tested.
 
 **License**
 - GNU General Public License v3.0 (GPL-3.0)
@@ -66,8 +49,6 @@ VISTA
 # Requirements
 
 ## Dependencies
-
-This application runs via Streamlit and requires both Python and R environments.
 
 | Python (v3.8+) | R (v4.3+) |
 |---------------|-----------|
@@ -104,13 +85,9 @@ cd VISTA
 
 To run VISTA, download the bundled model archive:
 
-**VISTA_data.tar.gz**
+**VISTA_data.tar.gz:** https://figshare.com/ndownloader/files/62956279
 
-https://figshare.com/ndownloader/files/62956279
-
-**Figshare DOI**
-
-https://doi.org/10.6084/m9.figshare.28684934.v10
+**Figshare DOI:** https://doi.org/10.6084/m9.figshare.28684934
 
 The archive contains:
 
@@ -268,4 +245,8 @@ The final columns contain:
 ### 5. norm_counts_mgSs_mgCST_DATE.csv
 
 Normalized mgSs abundances.
+
+# CITE VISTA
+## Williams A, Maros A, France MT, Ravel J, Holm JB. 2026. Not all vaginal microbiomes are equal: functional context shapes immune landscapes. mBio 17:e03645-25.
+### *Read the paper here:* [https://journals.asm.org/doi/10.1128/mbio.03645-25]
 
