@@ -2,148 +2,271 @@
 
 # VISTA: Vaginal Inference of Subspecies and Typing Algorithm
 
-This application provides visualizations and tools for assigning **VISTA Metagenomic Community State Types (mgCSTs)** to vaginal metagenomes. It includes a user-friendly interface for running the classifier on **[VIRGO2](https://github.com/ravel-lab/VIRGO2)** compiled output files.
+VISTA is an open-source classifier that assigns metagenomic subspecies (mgSs) and metagenomic community state types (mgCSTs) from VIRGO2-derived vaginal metagenomic gene profiles.
+
+VISTA provides both:
+
+- Command-line tools for high-throughput classification
+- A Streamlit application for interactive exploration of mgSs and mgCSTs
 
 ---
 
-## 🛠 Requirements
+# Quick Start
 
-### Dependencies
+## What does VISTA do?
 
-This application runs via **Streamlit** and requires both **Python** and **R** environments:
+VISTA does **not** process raw sequencing reads directly.
 
-<div align="center">
+### Workflow
 
-| Python (v3.8+)         | R (v4.3+)          |
-|------------------------|--------------------|
-| streamlit              | randomForestSRC    |
-| pandas                 | pheatmap           |
-| numpy                  | data.table         |
-| plotly                 | dplyr              |
-| seaborn                | parallel           |
-| scipy                  | R.utils            |
-| streamlit-pdf-viewer   |                    |
+```text
+FASTQ files
+    ↓
+VIRGO2 mapping
+    ↓
+VIRGO2.py compile
+    ↓
+VIRGO2_Compiled.summary.NR.txt
+    ↓
+VISTA
+    ↓
+• mgSs abundance matrix
+• mgCST assignments
+• mgCST heatmap
+```
 
-</div>
+VIRGO2 is a comprehensive vaginal microbiome gene catalog and annotation framework.
 
-To install the required Python libraries:
+VISTA uses VIRGO2-generated gene abundance profiles as input and performs:
+
+1. Metagenomic subspecies (mgSs) assignment
+2. Metagenomic community state type (mgCST) assignment
+
+*Read the paper here:* [https://journals.asm.org/doi/10.1128/mbio.03645-25]
+---
+
+# Software Information
+
+**Version:** VISTA v1.0.1
+
+**DOI:** https://doi.org/10.5281/zenodo.21937773
+
+**Programming Languages**
+- R
+- Python
+
+**Operating Systems**
+- Linux
+- macOS
+
+**License**
+- GNU General Public License v3.0 (GPL-3.0)
+
+---
+
+# Requirements
+
+## Dependencies
+
+This application runs via Streamlit and requires both Python and R environments.
+
+| Python (v3.8+) | R (v4.3+) |
+|---------------|-----------|
+| streamlit | randomForestSRC |
+| pandas | pheatmap |
+| numpy | data.table |
+| plotly | dplyr |
+| seaborn | parallel |
+| scipy | R.utils |
+| streamlit-pdf-viewer | |
+
+Install the required Python packages:
 
 ```bash
 pip install streamlit pandas numpy plotly seaborn scipy streamlit-pdf-viewer
 ```
 
-Required R packages are installed automatically via the classifier's R script.
+Required R packages are installed automatically by the classifier script.
 
 ---
 
-### 1. 🔧 Clone the VISTA Repository.
-To get started, clone the VISTA repository to your local machine using Git:
+# Installation
 
-    git clone https://github.com/JHolm-Lab/VISTA.git /path/to/destination/VISTA
-    cd /path/to/destination/VISTA
+## 1. Clone the Repository
 
-This will create a local copy of the VISTA codebase, including the classifier script. Make sure you have Git installed on your system. If not, you can install it from git-scm.com.
-
-### 2. 📥 Download VISTA Resources
-To set up the VISTA app and models required for `run_VISTA.R`, download the bundled archive from Figshare:  
-**🔗 [VISTA_data.tar.gz](https://figshare.com/ndownloader/files/62956279)**  <!-- 57807853-->
-
-version: doi.org/10.6084/m9.figshare.28684934.v10
-
-This includes:  
-- VISTA Streamlit app  
-- mgSs classification models  
-- mgCST reference centroids  
-
-### 3. 🔓 Unpack the Archive
-
-Extract the contents of the archive:
-
-    tar -xzvf /path/to/download_folder/VISTA_data.tar.gz 
-    
----
-
-## ⌨️ Classifying mgCSTs with VISTA via Command Line
-
-Run VISTA to assign mgCSTS without launching the Streamlit app.
-- The VISTA input file should be a VIRGO2 output file (generated via "VIRGO2.py compile"), provided either as a plain text file or compressed with .gz.
 ```bash
-# Usage:
-#   Rscript run_VISTA.R <VIRGO2_compile_summary> <VISTA_data_dir>
-
-Rscript path/to/run_VISTA.R \
-  path/to/VIRGO2_output_Compiled.summary.NR.txt \
-  /path/to/VISTA
-
-Rscript run_VISTA.R \
-  VISTA_example.txt.gz \
-  ~/bin/VISTA
+git clone https://github.com/JHolm-Lab/VISTA.git
+cd VISTA
 ```
 
-- Output files are saved to the current working directory.
-- Each output file is timestamped.
+---
+
+## 2. Download VISTA Resources
+
+To run VISTA, download the bundled model archive:
+
+**VISTA_data.tar.gz**
+
+https://figshare.com/ndownloader/files/62956279
+
+**Figshare DOI**
+
+https://doi.org/10.6084/m9.figshare.28684934.v10
+
+The archive contains:
+
+- VISTA Streamlit application
+- mgSs classification models
+- mgCST reference centroids
+- Supporting classifier resources
 
 ---
-## 💻 Running the VISTA App
-The VISTA app allows for exploration of VISTA mgCSTs and mgSs and classification of your own data. 
 
-Launch the VISTA Streamlit interface by navigating to the app directory and running:
+## 3. Unpack the Archive
 
 ```bash
-cd path/to/VISTA/VISTA_data
+tar -xzvf VISTA_data.tar.gz
+```
+
+---
+
+# Input Requirements
+
+VISTA requires a VIRGO2 compiled gene abundance file as input:
+
+```text
+VIRGO2_Compiled.summary.NR.txt
+```
+
+This file is generated by the VIRGO2 workflow using:
+
+```bash
+VIRGO2.py compile
+```
+
+An example input file is provided in this repository:
+
+```text
+VISTA_example.txt.gz
+```
+
+---
+
+# Running VISTA from the Command Line
+
+Run VISTA without launching the Streamlit application.
+
+## Usage
+
+```bash
+Rscript run_VISTA.R <VIRGO2_compile_summary> <VISTA_data_dir>
+```
+
+## Example
+
+```bash
+Rscript run_VISTA.R \
+    path/to/VIRGO2_Compiled.summary.NR.txt \
+    /path/to/VISTA_data
+```
+
+## Run Example Dataset
+
+```bash
+Rscript run_VISTA.R \
+    VISTA_example.txt.gz \
+    ./VISTA_data
+```
+
+Output files are written to the current working directory.
+
+All output files are automatically timestamped.
+
+---
+
+# Running the Streamlit Application
+
+The VISTA web application allows interactive exploration of:
+
+- mgSs
+- mgCSTs
+- Reference classifications
+- User-supplied datasets
+
+Launch the application:
+
+```bash
+cd VISTA_data
+
 streamlit run 0_Home.py
 ```
 
-Streamlit will start a local web server to explore mgSs and mgCSTs.
+Streamlit will start a local web server.
 
+---
 
-To run VISTA in the app: By default, the app allows uploads up to 20MB. To change this limit:
+## Increasing Upload Limits
 
-Open the Streamlit configuration file located at:
+By default, Streamlit limits uploads to 20 MB.
+
+Edit:
+
 ```bash
-path/to/VISTA/VISTA_data/.streamlit/config.toml
+VISTA_data/.streamlit/config.toml
 ```
 
-Update or add the following setting:
-```bash
+Add or modify:
+
+```toml
 [server]
-maxUploadSize = 30000  # Set your desired limit in megabytes
+maxUploadSize = 30000
 ```
-## 📊 Output
+
+The value is specified in megabytes.
+
+---
+
+# What VISTA Produces
+
+For each sample, VISTA assigns:
+
+1. Metagenomic subspecies (mgSs)
+2. Metagenomic community state type (mgCST)
+
+Additional outputs include abundance matrices, similarity scores, and heatmaps.
+
+---
+
+# Output Files
 
 VISTA generates six output files:
 
-1. **`norm_counts_genes_DATE.csv`**  
-   Normalized gene counts (by read length and gene length).
+### 1. norm_counts_genes_DATE.csv
 
-2. **`mgCST_heatmap_DATE.pdf`**  
-   Heatmap of samples and mgSs, annotated with assigned mgCSTs.
+Normalized gene counts after read-length and gene-length correction.
 
-3. **`mgCSTs_DATE.csv`**  
-   Sample assignments: includes `sampleID`, `mgCST`, and YC-theta similarity index.
+### 2. mgCST_heatmap_DATE.pdf
 
-4. **`relabund_w_mgCSTs_DATE.csv`**  
-   Relative abundances of mgSs per sample. Final 26 columns show YC-theta scores for each mgCST and the assigned mgCST.
+Heatmap of samples and mgSs annotated with assigned mgCSTs.
 
-5. **`norm_counts_mgSs_mgCST_DATE.csv`**  
-   Normalized mgSs counts (summed by mgSs after read/gene length normalization).
+### 3. mgCSTs_DATE.csv
 
-6. **`norm_counts_taxa_DATE.csv`**  
-   Normalized taxon counts (summed by VIRGO2 taxon after read/gene length normalization).
+Sample-level classifications including:
 
+- sampleID
+- mgCST
+- YC-theta similarity score
 
-## Citation
-If you use VISTA in your research, please cite:
-> Williams A, Maros A, France MT, Ravel J, Holm JB. 2026. Not all vaginal microbiomes are equal: functional context shapes immune landscapes. mBio 17:e03645-25.
-https://doi.org/10.1128/mbio.03645-25
+### 4. relabund_w_mgCSTs_DATE.csv
 
-## Documentation and Resources
-- VIRGO2 gene catalog: [(https://github.com/ravel-lab/VIRGO2)]
-- VISTA publication: [(https://doi.org/10.1128/mbio.03645-25)]
-- Web application: Hosted internally
+Relative abundances of all mgSs.
 
-## License
-This project is licensed under the MIT License.
+The final columns contain:
 
-## Contact
-For questions or contributions, please contact the [JHolm Lab](https://github.com/JHolm-Lab).
+- YC-theta similarity scores for each mgCST
+- Assigned mgCST
+
+### 5. norm_counts_mgSs_mgCST_DATE.csv
+
+Normalized mgSs abundances.
+
