@@ -16,6 +16,11 @@ VISTA provides both:
 ## What does VISTA do?
 
 VISTA does **not** process raw sequencing reads directly.
+VIRGO2 is a comprehensive vaginal microbiome gene catalog and annotation framework.
+VISTA uses VIRGO2-generated gene abundance profiles as input and performs:
+
+1. Metagenomic subspecies (mgSs) assignment
+2. Metagenomic community state type (mgCST) assignment
 
 ### Workflow
 
@@ -34,13 +39,7 @@ VISTA
 • mgCST assignments
 • mgCST heatmap
 ```
-
-VIRGO2 is a comprehensive vaginal microbiome gene catalog and annotation framework.
-
-VISTA uses VIRGO2-generated gene abundance profiles as input and performs:
-
-1. Metagenomic subspecies (mgSs) assignment
-2. Metagenomic community state type (mgCST) assignment
+<img src="assets/Fig1_New.png" alt="VISTA workflow" width="600"/>
 
 *Read the paper here:* [https://journals.asm.org/doi/10.1128/mbio.03645-25]
 ---
