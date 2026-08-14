@@ -139,7 +139,7 @@ https://doi.org/10.1128/mbio.03645-25
 
 ## Documentation and Resources
 - VIRGO2 gene catalog: [(https://github.com/ravel-lab/VIRGO2)]
-- VISTA publication: [Link if available]
+- VISTA publication: [(https://doi.org/10.1128/mbio.03645-25)]
 - Web application: Hosted internally
 
 ## License
