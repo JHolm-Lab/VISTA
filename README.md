@@ -39,6 +39,7 @@ VISTA
 • mgCST assignments
 • mgCST heatmap
 ```
+<img src="assets/Fig1_New.tif" alt="VISTA workflow" width="600"/>
 
 *Read the paper here:* [https://journals.asm.org/doi/10.1128/mbio.03645-25]
 ---
